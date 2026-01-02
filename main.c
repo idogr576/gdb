@@ -87,6 +87,9 @@ int main(int argc, char *argv[])
         LOG_DEBUG("[parent] first letter of child's str is %c\n", (char)first_letter);
         */
 
+        /*
+        TODO: insert a cli client here and use PTRACE_CONT only on "run" command
+        */
         LOG_DEBUG("continue execution of child");
         ptrace(PTRACE_CONT, pid, NULL, NULL);
     }
