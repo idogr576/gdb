@@ -5,45 +5,66 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-// define a global variable
-char str[] = "pasten";
+#include <logger.h>
 
-int main()
+// define a global variable
+// char str[] = "pasten";
+
+int main(int argc, char *argv[])
 {
+    char *binary_path;
     pid_t pid;
     int wstatus;
 
-    printf("str address is %p\n", str);
+    logger_initConsoleLogger(stderr);
+    logger_setLevel(LogLevel_DEBUG);
+
+    if (argc != 2)
+    {
+        LOG_ERROR("Usage: %s <binary_name>", argv[0]);
+        goto error;
+    }
+    binary_path = argv[1];
+    if (access(binary_path, F_OK) == -1)
+    {
+        LOG_INFO("did not find \"%s\", attempt to run from PATH", binary_path);
+    }
+    else if (access(binary_path, X_OK) == -1)
+    {
+        LOG_ERROR("failed to access binary in path %s", binary_path);
+        goto error;
+    }
 
     pid = fork();
 
     if (pid == -1)
     {
-        perror("[parent] error forking the process");
-        return errno;
+        LOG_ERROR("[parent] error forking the process");
+        goto error;
     }
-    else if (pid)
+    else if (pid) // parent process
     {
-        long first_letter;
+        // long first_letter;
 
         waitpid(pid, &wstatus, 0); // wait for the tracee to initiate
         if (!WIFSTOPPED(wstatus))
         {
-            perror("[parent] child process didn't stop as intended!\n");
-            return 1;
+            LOG_ERROR("[parent] child process didn't stop as intended!\n");
+            goto error;
         }
+        /*
         // set the tracee to stop on exit
-        // ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACEEXIT);
+        ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACEEXIT);
 
         // stop child at execution
         errno = 0;
         first_letter = ptrace(PTRACE_PEEKDATA, pid, str, NULL);
         if (first_letter == -1)
         {
-            printf("[parent] cannot peek data, errno is %d\n", errno);
+            LOG_ERROR("[parent] cannot peek data, errno is %d\n", errno);
             return errno;
         }
-        printf("[parent] first letter of child's str is %c\n", (char)first_letter);
+        LOG_DEBUG("[parent] first letter of child's str is %c\n", (char)first_letter);
 
         // continue execution of stopped child
         ptrace(PTRACE_CONT, pid, NULL, NULL);
@@ -52,34 +73,38 @@ int main()
         waitpid(pid, &wstatus, 0);
         if (!WIFSTOPPED(wstatus))
         {
-            perror("[parent] child didn't terminate normally!");
+            LOG_ERROR("[parent] child didn't terminate normally!");
             return 2;
         }
-        printf("[parent] \"%s\" is in address %p\n", str, str);
+        LOG_DEBUG("[parent] \"%s\" is in address %p\n", str, str);
         // attempt to peek at data using ptrace
         first_letter = ptrace(PTRACE_PEEKDATA, pid, str, NULL);
         if (first_letter == -1)
         {
-            printf("[parent] cannot peek data, errno is %d\n", errno);
+            LOG_ERROR("[parent] cannot peek data, errno is %d\n", errno);
             return errno;
         }
-        printf("[parent] first letter of child's str is %c\n", (char)first_letter);
+        LOG_DEBUG("[parent] first letter of child's str is %c\n", (char)first_letter);
+        */
 
+        LOG_DEBUG("continue execution of child");
         ptrace(PTRACE_CONT, pid, NULL, NULL);
     }
-    else
+    else // child process
     {
-        // child process
         ptrace(PTRACE_TRACEME, 0, 0, 0);
         raise(SIGSTOP);
-        // continued execution!
-        str[0] = 'A';
-        printf("[child] change first letter to \'%c\'!\n", str[0]);
-        printf("[child] \"%s\" is in address %p\n", str, str);
-        printf("[child] stopping again...\n");
-        raise(SIGSTOP);
-        printf("[child] child terminated!\n");
+        // tracer continue execution!
+        char *const exec_argv[] = {binary_path, NULL};
+        execvp(binary_path, exec_argv);
     }
 
     return 0;
+
+error:
+    if (errno)
+    {
+        perror("");
+    }
+    return errno;
 }
