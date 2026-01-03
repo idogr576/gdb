@@ -6,6 +6,7 @@
 #include <errno.h>
 
 #include <logger.h>
+#include "cli.h"
 
 // define a global variable
 // char str[] = "pasten";
@@ -27,7 +28,7 @@ int main(int argc, char *argv[])
     binary_path = argv[1];
     if (access(binary_path, F_OK) == -1)
     {
-        LOG_INFO("did not find \"%s\", attempt to run from PATH", binary_path);
+        LOG_DEBUG("did not find \"%s\", attempt to run from PATH", binary_path);
     }
     else if (access(binary_path, X_OK) == -1)
     {
@@ -44,6 +45,7 @@ int main(int argc, char *argv[])
     }
     else if (pid) // parent process
     {
+        command op;
         // long first_letter;
 
         waitpid(pid, &wstatus, 0); // wait for the tracee to initiate
@@ -90,7 +92,10 @@ int main(int argc, char *argv[])
         /*
         TODO: insert a cli client here and use PTRACE_CONT only on "run" command
         */
-        LOG_DEBUG("continue execution of child");
+        op = read_command();
+        LOG_DEBUG("read command with id %d", op);
+        LOG_INFO("sleeping...");
+        sleep(3);
         ptrace(PTRACE_CONT, pid, NULL, NULL);
     }
     else // child process
@@ -98,6 +103,7 @@ int main(int argc, char *argv[])
         ptrace(PTRACE_TRACEME, 0, 0, 0);
         raise(SIGSTOP);
         // tracer continue execution!
+        // TODO: support run arguments for the binary
         char *const exec_argv[] = {binary_path, NULL};
         execvp(binary_path, exec_argv);
     }

@@ -14,11 +14,15 @@ set(CMAKE_C_EXTENSIONS OFF)
 # Warnings
 add_compile_options(-Wall -Wextra -Wpedantic)
 
+# debug symbols
+add_compile_options(-g)
+
 # Executable
 add_executable(gdb
     main.c
     breakpoint.c
     cli.c
+    operation.c
 )
 
 # Include headers from this directory
