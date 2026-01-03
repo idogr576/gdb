@@ -14,7 +14,7 @@ command_op read_command()
     char chr_op;
     command_op cmd_op = {NULL, NULL};
 
-    CONSOLE(">> ");
+    printf(">> ");
 
     if (getline(&cmdline, &maxsize, stdin) == -1)
     {
@@ -64,6 +64,11 @@ command_op read_command()
     case 'X':
     case 'x':
         cmd_op.func_op = examine_op;
+        break;
+
+    case 'H':
+    case 'h':
+        cmd_op.func_op = help_op;
         break;
 
     default:

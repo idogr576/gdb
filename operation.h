@@ -11,3 +11,5 @@ void examine_op(int pid, char *cmd);
 void print_op(int pid, char *cmd);
 
 void breakpoint_op(int pid, char *cmd);
+
+void help_op(int pid, char *cmd);

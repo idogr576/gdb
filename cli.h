@@ -1,7 +1,5 @@
 #pragma once
 
-#define CONSOLE printf
-
 typedef enum command
 {
     UNDEFINED,
@@ -10,7 +8,8 @@ typedef enum command
     NEXT,
     EXAMINE,
     PRINT,
-    BREAKPOINT
+    BREAKPOINT,
+    HELP
 } command;
 
 typedef struct command_op
