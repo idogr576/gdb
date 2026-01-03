@@ -8,6 +8,10 @@
 void run_op(int pid, char *cmd)
 {
     LOG_DEBUG("operarion RUN");
+    puts("-----------------------------");
+    puts("starting execution of program");
+    puts("-----------------------------");
+    ptrace(PTRACE_CONT, pid, 0, 0);
 }
 
 void continue_op(int pid, char *cmd)
