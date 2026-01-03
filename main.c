@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     }
     else if (pid) // parent process
     {
-        command op;
+        command_op cmd_op;
         // long first_letter;
 
         waitpid(pid, &wstatus, 0); // wait for the tracee to initiate
@@ -54,6 +54,8 @@ int main(int argc, char *argv[])
             LOG_ERROR("[parent] child process didn't stop as intended!\n");
             goto error;
         }
+        ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACEEXEC | PTRACE_O_TRACEEXIT | PTRACE_O_EXITKILL);
+        ptrace(PTRACE_CONT, pid, 0, 0);
         /*
         // set the tracee to stop on exit
         ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACEEXIT);
@@ -92,11 +94,16 @@ int main(int argc, char *argv[])
         /*
         TODO: insert a cli client here and use PTRACE_CONT only on "run" command
         */
-        op = read_command();
-        LOG_DEBUG("read command with id %d", op);
+        cmd_op = read_command();
+        LOG_DEBUG("read command \"%s\"", cmd_op.cmdline);
         LOG_INFO("sleeping...");
-        sleep(3);
-        ptrace(PTRACE_CONT, pid, NULL, NULL);
+        if (cmd_op.func_op)
+        {
+            cmd_op.func_op(pid, cmd_op.cmdline);
+        }
+        sleep(1);
+        LOG_DEBUG("[parent] DONE");
+        sleep(1);
     }
     else // child process
     {
