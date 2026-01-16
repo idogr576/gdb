@@ -71,6 +71,11 @@ command_op read_command()
         cmd_op.func_op = help_op;
         break;
 
+    case 'Q':
+    case 'q':
+        cmd_op.func_op = quit_op;
+        break;
+
     default:
         cmd_op.func_op = NULL;
     }

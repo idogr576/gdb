@@ -1,4 +1,5 @@
 #pragma once
+#include "operation.h"
 
 typedef enum command
 {
@@ -9,13 +10,14 @@ typedef enum command
     EXAMINE,
     PRINT,
     BREAKPOINT,
-    HELP
+    HELP,
+    QUIT
 } command;
 
 typedef struct command_op
 {
     char *cmdline;
-    void (*func_op)(int, char *);
+    void (*func_op)(state *, int, char *);
 } command_op;
 
 command_op read_command();

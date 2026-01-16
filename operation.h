@@ -1,15 +1,24 @@
 #pragma once
+#include <stdbool.h>
 
-void run_op(int pid, char *cmd);
+#define IS_QUIT_OP(command_op) (command_op.func_op == quit_op)
 
-void continue_op(int pid, char *cmd);
+typedef struct tracee_state {
+    bool is_running;
+} state;
 
-void next_op(int pid, char *cmd);
+void run_op(state *state, int pid, char *cmd);
 
-void examine_op(int pid, char *cmd);
+void continue_op(state *state, int pid, char *cmd);
 
-void print_op(int pid, char *cmd);
+void next_op(state *state, int pid, char *cmd);
 
-void breakpoint_op(int pid, char *cmd);
+void examine_op(state *state, int pid, char *cmd);
 
-void help_op(int pid, char *cmd);
+void print_op(state *state, int pid, char *cmd);
+
+void breakpoint_op(state *state, int pid, char *cmd);
+
+void help_op(state *state, int pid, char *cmd);
+
+void quit_op(state *state, int pid, char *cmd);

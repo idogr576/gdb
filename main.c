@@ -7,6 +7,7 @@
 
 #include <logger.h>
 #include "cli.h"
+#include "operation.h"
 
 // define a global variable
 // char str[] = "pasten";
@@ -46,6 +47,7 @@ int main(int argc, char *argv[])
     else if (pid) // parent process
     {
         command_op cmd_op;
+        state state = {.is_running = false};
         // long first_letter;
 
         waitpid(pid, &wstatus, 0); // wait for the tracee to initiate
@@ -54,7 +56,7 @@ int main(int argc, char *argv[])
             LOG_ERROR("[parent] child process didn't stop as intended!\n");
             goto error;
         }
-        ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACEEXEC | PTRACE_O_TRACEEXIT | PTRACE_O_EXITKILL);
+        ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACEEXEC | PTRACE_O_EXITKILL);
         ptrace(PTRACE_CONT, pid, 0, 0);
         /*
         // set the tracee to stop on exit
@@ -94,16 +96,23 @@ int main(int argc, char *argv[])
         /*
         TODO: insert a cli client here and use PTRACE_CONT only on "run" command
         */
-        cmd_op = read_command();
-        LOG_DEBUG("read command \"%s\"", cmd_op.cmdline);
-        LOG_INFO("sleeping...");
-        if (cmd_op.func_op)
+
+        // start the main loop
+        do
         {
-            cmd_op.func_op(pid, cmd_op.cmdline);
-        }
-        sleep(1);
-        LOG_DEBUG("[parent] DONE");
-        sleep(1);
+            cmd_op = read_command();
+            LOG_DEBUG("read command \"%s\"", cmd_op.cmdline);
+            if (cmd_op.func_op)
+            {
+                cmd_op.func_op(&state, pid, cmd_op.cmdline);
+            }
+            if (state.is_running)
+            {
+                waitpid(pid, &wstatus, 0);
+                LOG_DEBUG("waitpid catch status %d", wstatus);
+                state.is_running = false;
+            }
+        } while (!WIFEXITED(wstatus) && !IS_QUIT_OP(cmd_op));
     }
     else // child process
     {
@@ -118,9 +127,11 @@ int main(int argc, char *argv[])
     return 0;
 
 error:
+    char *err;
     if (errno)
     {
-        perror("");
+        err = strerror(errno);
+        LOG_ERROR(err);
     }
     return errno;
 }
