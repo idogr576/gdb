@@ -4,36 +4,38 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
 
 #include <logger.h>
 #include "cli.h"
 #include "operation.h"
+#include "symbols.h"
+#include "path_utils.h"
 
 // define a global variable
 // char str[] = "pasten";
 
 int main(int argc, char *argv[])
 {
-    char *binary_path;
+    char binary_path[PATH_MAX_LEN] = {0};
     pid_t pid;
     int wstatus;
 
     logger_initConsoleLogger(stderr);
-    logger_setLevel(LogLevel_DEBUG);
+    // logger_setLevel(LogLevel_DEBUG);
+    logger_setLevel(LogLevel_ERROR);
 
     if (argc != 2)
     {
-        LOG_ERROR("Usage: %s <binary_name>", argv[0]);
+        printf("Usage: %s <binary_name>\n", argv[0]);
         goto error;
     }
-    binary_path = argv[1];
-    if (access(binary_path, F_OK) == -1)
+    strcpy(binary_path, argv[1]);
+
+    if (!binary_path_exists(binary_path))
     {
-        LOG_DEBUG("did not find \"%s\", attempt to run from PATH", binary_path);
-    }
-    else if (access(binary_path, X_OK) == -1)
-    {
-        LOG_ERROR("failed to access binary in path %s", binary_path);
         goto error;
     }
 
@@ -47,7 +49,7 @@ int main(int argc, char *argv[])
     else if (pid) // parent process
     {
         command_op cmd_op;
-        state state = {.is_running = false};
+        state state = {.start = false, .is_running = false};
         // long first_letter;
 
         waitpid(pid, &wstatus, 0); // wait for the tracee to initiate
@@ -57,6 +59,9 @@ int main(int argc, char *argv[])
             goto error;
         }
         ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACEEXEC | PTRACE_O_EXITKILL);
+        // load the symbol table before getting commands
+        symtab_elf_load(binary_path, &g_symtab);
+        LOG_DEBUG("g_symtab: size = %d", g_symtab.size);
         ptrace(PTRACE_CONT, pid, 0, 0);
         /*
         // set the tracee to stop on exit
@@ -110,7 +115,7 @@ int main(int argc, char *argv[])
             {
                 waitpid(pid, &wstatus, 0);
                 LOG_DEBUG("waitpid catch status %d", wstatus);
-                state.is_running = false;
+                state.is_running = !WIFSTOPPED(wstatus);
             }
         } while (!WIFEXITED(wstatus) && !IS_QUIT_OP(cmd_op));
     }
@@ -121,16 +126,15 @@ int main(int argc, char *argv[])
         // tracer continue execution!
         // TODO: support run arguments for the binary
         char *const exec_argv[] = {binary_path, NULL};
-        execvp(binary_path, exec_argv);
+        execv(binary_path, exec_argv);
     }
 
     return 0;
 
 error:
-    char *err;
     if (errno)
     {
-        err = strerror(errno);
+        char *err = strerror(errno);
         LOG_ERROR(err);
     }
     return errno;

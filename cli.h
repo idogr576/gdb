@@ -1,19 +1,6 @@
 #pragma once
 #include "operation.h"
 
-typedef enum command
-{
-    UNDEFINED,
-    RUN,
-    CONTINUE,
-    NEXT,
-    EXAMINE,
-    PRINT,
-    BREAKPOINT,
-    HELP,
-    QUIT
-} command;
-
 typedef struct command_op
 {
     char *cmdline;

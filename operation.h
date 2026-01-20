@@ -4,6 +4,7 @@
 #define IS_QUIT_OP(command_op) (command_op.func_op == quit_op)
 
 typedef struct tracee_state {
+    bool start;
     bool is_running;
 } state;
 
@@ -22,3 +23,5 @@ void breakpoint_op(state *state, int pid, char *cmd);
 void help_op(state *state, int pid, char *cmd);
 
 void quit_op(state *state, int pid, char *cmd);
+
+void list_op(state *state, int pid, char *cmd);

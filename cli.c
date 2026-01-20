@@ -14,6 +14,7 @@ command_op read_command()
     char chr_op;
     command_op cmd_op = {NULL, NULL};
 
+    rewind(stdin);
     printf(">> ");
 
     if (getline(&cmdline, &maxsize, stdin) == -1)
@@ -76,6 +77,11 @@ command_op read_command()
         cmd_op.func_op = quit_op;
         break;
 
+    case 'L':
+    case 'l':
+        cmd_op.func_op = list_op;
+        break;
+
     default:
         cmd_op.func_op = NULL;
     }
@@ -83,6 +89,9 @@ command_op read_command()
     return cmd_op;
 
 error:
-    free(cmdline);
+    if (cmdline)
+    {
+        free(cmdline);
+    }
     return (command_op){NULL, NULL};
 }

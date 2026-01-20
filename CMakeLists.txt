@@ -23,6 +23,8 @@ add_executable(gdb
     breakpoint.c
     cli.c
     operation.c
+    symbols.c
+    path_utils.c
 )
 
 # Include headers from this directory
@@ -34,4 +36,5 @@ target_include_directories(gdb PRIVATE
 target_link_libraries(gdb
     PRIVATE
     logger
+    elf
 )
