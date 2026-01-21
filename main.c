@@ -27,9 +27,9 @@ int main(int argc, char *argv[])
     // logger_setLevel(LogLevel_DEBUG);
     logger_setLevel(LogLevel_ERROR);
 
-    if (argc != 2)
+    if (argc < 2)
     {
-        printf("Usage: %s <binary_name>\n", argv[0]);
+        printf("Usage: %s <binary_name> <binary args>\n", argv[0]);
         goto error;
     }
     strcpy(binary_path, argv[1]);
@@ -125,7 +125,17 @@ int main(int argc, char *argv[])
         raise(SIGSTOP);
         // tracer continue execution!
         // TODO: support run arguments for the binary
-        char *const exec_argv[] = {binary_path, NULL};
+        char **exec_argv = (char **)malloc(argc * sizeof(char *));
+        if (!exec_argv)
+        {
+            goto error;
+        }
+        exec_argv[0] = binary_path;
+        exec_argv[argc - 1] = NULL;
+        for (int i = 1; i < argc - 1; i++)
+        {
+            exec_argv[i] = argv[i + 1];
+        }
         execv(binary_path, exec_argv);
     }
 
