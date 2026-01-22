@@ -5,6 +5,7 @@
 
 #include "operation.h"
 #include "symbols.h"
+#include "parser.h"
 
 #define BUF_SIZE 1000
 #define SEP_CHR ' '
@@ -58,15 +59,15 @@ void print_op(state *state, int pid, char *cmd)
         printf("invalid command \"%s\", missing ' ' after p\n", cmd);
         return;
     }
-    GElf_Sym *sym = symtab_find_sym(&g_symtab, ++sep);
-    if (!sym)
+    GElf_Addr addr = resolve_address(pid, &g_symtab, ++sep);
+    if (addr == (GElf_Addr)-1)
     {
-        printf("%s address not found!\n", sep);
+
+        printf("cannot resolve address %s\n", sep);
     }
     else
     {
-        GElf_Addr sym_addr = symtab_get_dyn_sym_addr(pid, sym);
-        printf("%s == 0x%lx\n", sep, sym_addr);
+        printf("%s == 0x%lx\n", sep, addr);
     }
 }
 
