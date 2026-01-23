@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <logger.h>
 
 #include "cli.h"
@@ -19,7 +20,7 @@ command_op read_command()
 
     if (getline(&cmdline, &maxsize, stdin) == -1)
     {
-        LOG_ERROR("cannot read line from user");
+        LOG_DEBUG("cannot read line from user");
         goto error;
     }
 
@@ -33,51 +34,42 @@ command_op read_command()
     LOG_DEBUG("read: \"%s\"", cmdline);
     cmd_op.cmdline = cmdline;
 
-    chr_op = cmdline[0];
+    chr_op = tolower(cmdline[0]);
 
     switch (chr_op)
     {
-    case 'R':
     case 'r':
         cmd_op.func_op = run_op;
         break;
 
-    case 'B':
     case 'b':
         cmd_op.func_op = breakpoint_op;
         break;
 
-    case 'C':
     case 'c':
         cmd_op.func_op = continue_op;
         break;
 
-    case 'N':
     case 'n':
         cmd_op.func_op = next_op;
         break;
 
-    case 'P':
     case 'p':
         cmd_op.func_op = print_op;
         break;
 
-    case 'X':
     case 'x':
         cmd_op.func_op = examine_op;
         break;
 
-    case 'H':
     case 'h':
         cmd_op.func_op = help_op;
         break;
 
-    case 'Q':
     case 'q':
         cmd_op.func_op = quit_op;
         break;
 
-    case 'L':
     case 'l':
         cmd_op.func_op = list_op;
         break;
@@ -89,9 +81,10 @@ command_op read_command()
     return cmd_op;
 
 error:
+    // define error as quit op
     if (cmdline)
     {
         free(cmdline);
     }
-    return (command_op){NULL, NULL};
+    return (command_op){.cmdline = "q", .func_op = quit_op};
 }
