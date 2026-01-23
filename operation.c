@@ -10,43 +10,40 @@
 #define BUF_SIZE 1000
 #define SEP_CHR ' '
 
-// define the global symbol table for gdb
-symtab g_symtab;
-
-void run_op(state *state, int pid, char *cmd)
+void run_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operarion RUN");
     puts("-----------------------------");
     puts("starting execution of program");
     puts("-----------------------------");
-    state->start = true;
-    state->is_running = true;
-    ptrace(PTRACE_CONT, pid, 0, 0);
+    tracee->state.start = true;
+    tracee->state.is_running = true;
+    ptrace(PTRACE_CONT, tracee->pid, 0, 0);
 }
 
-void continue_op(state *state, int pid, char *cmd)
+void continue_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation CONTINUE");
-    if (!state->start)
+    if (!tracee->state.start)
     {
         puts("start execution with \"r\"");
         return;
     }
-    state->is_running = true;
-    ptrace(PTRACE_CONT, pid, 0, 0);
+    tracee->state.is_running = true;
+    ptrace(PTRACE_CONT, tracee->pid, 0, 0);
 }
 
-void next_op(state *state, int pid, char *cmd)
+void next_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation NEXT");
 }
 
-void examine_op(state *state, int pid, char *cmd)
+void examine_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation EXAMINE");
 }
 
-void print_op(state *state, int pid, char *cmd)
+void print_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation PRINT");
     /*
@@ -59,7 +56,7 @@ void print_op(state *state, int pid, char *cmd)
         printf("invalid command \"%s\", missing ' ' after p\n", cmd);
         return;
     }
-    GElf_Addr addr = resolve_address(pid, &g_symtab, ++sep);
+    GElf_Addr addr = resolve_address(tracee->pid, &tracee->symtab, ++sep);
     if (addr == (GElf_Addr)-1)
     {
 
@@ -71,13 +68,13 @@ void print_op(state *state, int pid, char *cmd)
     }
 }
 
-void breakpoint_op(state *state, int pid, char *cmd)
+void breakpoint_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation BREAKPOINT");
-    LOG_DEBUG("pid is %d, cmd is \"%s\"", pid, cmd);
+    LOG_DEBUG("pid is %d, cmd is \"%s\"", tracee->pid, cmd);
 }
 
-void help_op(state *state, int pid, char *cmd)
+void help_op(tracee *tracee, char *cmd)
 {
     char buffer[BUF_SIZE] = {0};
     FILE *helpfp = fopen("./docs/help.txt", "r");
@@ -85,12 +82,12 @@ void help_op(state *state, int pid, char *cmd)
     puts(buffer);
 }
 
-void quit_op(state *state, int pid, char *cmd)
+void quit_op(tracee *tracee, char *cmd)
 {
     puts("Goodby from gdb!");
 }
 
-void list_op(state *state, int pid, char *cmd)
+void list_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation LIST");
 }

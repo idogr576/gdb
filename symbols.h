@@ -25,8 +25,6 @@ typedef struct symbolTable
     GElf_Sym symbols[SYMTAB_SIZE];
 } symtab;
 
-extern symtab g_symtab;
-
 void symtab_init(symtab *symtab);
 
 void symtab_add_sym(symtab *symtab, char *sym_name, GElf_Sym *sym);

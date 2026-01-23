@@ -1,27 +1,22 @@
 #pragma once
-#include <stdbool.h>
+#include "tracee.h"
 
 #define IS_QUIT_OP(command_op) (command_op.func_op == quit_op)
 
-typedef struct tracee_state {
-    bool start;
-    bool is_running;
-} state;
+void run_op(tracee *tracee, char *cmd);
 
-void run_op(state *state, int pid, char *cmd);
+void continue_op(tracee *tracee, char *cmd);
 
-void continue_op(state *state, int pid, char *cmd);
+void next_op(tracee *tracee, char *cmd);
 
-void next_op(state *state, int pid, char *cmd);
+void examine_op(tracee *tracee, char *cmd);
 
-void examine_op(state *state, int pid, char *cmd);
+void print_op(tracee *tracee, char *cmd);
 
-void print_op(state *state, int pid, char *cmd);
+void breakpoint_op(tracee *tracee, char *cmd);
 
-void breakpoint_op(state *state, int pid, char *cmd);
+void help_op(tracee *tracee, char *cmd);
 
-void help_op(state *state, int pid, char *cmd);
+void quit_op(tracee *tracee, char *cmd);
 
-void quit_op(state *state, int pid, char *cmd);
-
-void list_op(state *state, int pid, char *cmd);
+void list_op(tracee *tracee, char *cmd);

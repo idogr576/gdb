@@ -7,12 +7,13 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-
 #include <logger.h>
+
 #include "cli.h"
 #include "operation.h"
 #include "symbols.h"
 #include "path_utils.h"
+#include "tracee.h"
 
 // define a global variable
 // char str[] = "pasten";
@@ -20,12 +21,12 @@
 int main(int argc, char *argv[])
 {
     char binary_path[PATH_MAX_LEN] = {0};
-    pid_t pid;
+    pid_t _pid;
     int wstatus;
 
     logger_initConsoleLogger(stderr);
-    // logger_setLevel(LogLevel_DEBUG);
-    logger_setLevel(LogLevel_ERROR);
+    logger_setLevel(LogLevel_DEBUG);
+    // logger_setLevel(LogLevel_ERROR);
 
     if (argc < 2)
     {
@@ -39,30 +40,29 @@ int main(int argc, char *argv[])
         goto error;
     }
 
-    pid = fork();
+    _pid = fork();
 
-    if (pid == -1)
+    if (_pid == -1)
     {
         LOG_ERROR("[parent] error forking the process");
         goto error;
     }
-    else if (pid) // parent process
+    else if (_pid) // parent process
     {
-        command_op cmd_op;
-        state state = {.start = false, .is_running = false};
-        // long first_letter;
+        state _state = {.start = false, .is_running = false};
+        tracee tracee = {.pid = _pid, .state = _state};
 
-        waitpid(pid, &wstatus, 0); // wait for the tracee to initiate
+        waitpid(tracee.pid, &wstatus, 0); // wait for the tracee to initiate
         if (!WIFSTOPPED(wstatus))
         {
             LOG_ERROR("[parent] child process didn't stop as intended!\n");
             goto error;
         }
-        ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACEEXEC | PTRACE_O_EXITKILL);
+        ptrace(PTRACE_SETOPTIONS, tracee.pid, 0, PTRACE_O_TRACEEXEC | PTRACE_O_EXITKILL);
         // load the symbol table before getting commands
-        symtab_elf_load(binary_path, &g_symtab);
-        LOG_DEBUG("g_symtab: size = %d", g_symtab.size);
-        ptrace(PTRACE_CONT, pid, 0, 0);
+        symtab_elf_load(binary_path, &tracee.symtab);
+        LOG_DEBUG("symtab: size = %d", tracee.symtab.size);
+        ptrace(PTRACE_CONT, tracee.pid, 0, 0);
         /*
         // set the tracee to stop on exit
         ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACEEXIT);
@@ -103,19 +103,19 @@ int main(int argc, char *argv[])
         */
 
         // start the main loop
+        command_op cmd_op;
         do
         {
             cmd_op = read_command();
-            LOG_DEBUG("read command \"%s\"", cmd_op.cmdline);
             if (cmd_op.func_op)
             {
-                cmd_op.func_op(&state, pid, cmd_op.cmdline);
+                cmd_op.func_op(&tracee, cmd_op.cmdline);
             }
-            if (state.is_running)
+            if (tracee.state.is_running)
             {
-                waitpid(pid, &wstatus, 0);
+                waitpid(tracee.pid, &wstatus, 0);
                 LOG_DEBUG("waitpid catch status %d", wstatus);
-                state.is_running = !WIFSTOPPED(wstatus);
+                tracee.state.is_running = !WIFSTOPPED(wstatus);
             }
         } while (!WIFEXITED(wstatus) && !IS_QUIT_OP(cmd_op));
     }
