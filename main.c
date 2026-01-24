@@ -108,9 +108,9 @@ int main(int argc, char *argv[])
         command_op cmd_op;
         do
         {
-            get_current_opcode(&tracee, opcode);
             if (tracee.state.start)
             {
+                get_current_opcode(&tracee, opcode);
                 printf("\n%s\n", opcode);
             }
             cmd_op = read_command(">>");

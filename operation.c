@@ -2,6 +2,7 @@
 #include <sys/ptrace.h>
 #include <logger.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "operation.h"
 #include "symbols.h"
@@ -38,6 +39,11 @@ void continue_op(tracee *tracee, char *cmd)
 void next_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation NEXT");
+    if (tracee->state.start && !tracee->state.is_running)
+    {
+        ptrace(PTRACE_SINGLESTEP, tracee->pid, 0, 0);
+        tracee->state.is_running = true;
+    }
 }
 
 void examine_op(tracee *tracee, char *cmd)
