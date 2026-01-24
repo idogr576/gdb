@@ -15,6 +15,10 @@
 
 void run_op(tracee *tracee, char *cmd)
 {
+    if (tracee->state.start)
+    {
+        return;
+    }
     LOG_DEBUG("operarion RUN");
     puts("-----------------------------");
     puts("starting execution of program");

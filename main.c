@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 
         // start the main loop
         char opcode[OPCODE_MAX_REPR] = {0};
-        command_op cmd_op;
+        command_op cmd_op, last_cmd_op;
         do
         {
             if (tracee.state.start)
@@ -114,6 +114,10 @@ int main(int argc, char *argv[])
                 printf("\n%s\n", opcode);
             }
             cmd_op = read_command(">>");
+            if (!strlen(cmd_op.cmdline))
+            {
+                cmd_op = last_cmd_op;
+            }
             if (cmd_op.func_op)
             {
                 cmd_op.func_op(&tracee, cmd_op.cmdline);
@@ -124,6 +128,7 @@ int main(int argc, char *argv[])
                 LOG_DEBUG("waitpid catch status %d", wstatus);
                 tracee.state.is_running = !WIFSTOPPED(wstatus);
             }
+            last_cmd_op = cmd_op;
         } while (!WIFEXITED(wstatus) && !IS_QUIT_OP(cmd_op));
     }
     else // child process

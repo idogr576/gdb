@@ -6,8 +6,6 @@
 #include "x86_64.h"
 #include "registers.h"
 #include "tracee.h"
-#include "symbols.h"
-#include "parser.h"
 
 void get_current_opcode(tracee *tracee, char *opcode)
 {
