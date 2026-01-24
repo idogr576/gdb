@@ -8,7 +8,7 @@
 #include "cli.h"
 #include "operation.h"
 
-command_op read_command()
+command_op read_command(char *prefix)
 {
     size_t maxsize = 0;
     char *cmdline = NULL;
@@ -16,7 +16,7 @@ command_op read_command()
     command_op cmd_op = {NULL, NULL};
 
     rewind(stdin);
-    printf(">> ");
+    printf("%s ", prefix);
 
     if (getline(&cmdline, &maxsize, stdin) == -1)
     {

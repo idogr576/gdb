@@ -7,4 +7,4 @@ typedef struct command_op
     void (*func_op)(tracee *, char *);
 } command_op;
 
-command_op read_command();
+command_op read_command(char *prefix);

@@ -14,6 +14,7 @@
 #include "symbols.h"
 #include "path_utils.h"
 #include "tracee.h"
+#include "x86_64.h"
 
 // define a global variable
 // char str[] = "pasten";
@@ -25,8 +26,8 @@ int main(int argc, char *argv[])
     int wstatus;
 
     logger_initConsoleLogger(stderr);
-    logger_setLevel(LogLevel_DEBUG);
-    // logger_setLevel(LogLevel_ERROR);
+    // logger_setLevel(LogLevel_DEBUG);
+    logger_setLevel(LogLevel_ERROR);
 
     if (argc < 2)
     {
@@ -103,10 +104,16 @@ int main(int argc, char *argv[])
         */
 
         // start the main loop
+        char opcode[OPCODE_MAX_REPR] = {0};
         command_op cmd_op;
         do
         {
-            cmd_op = read_command();
+            get_current_opcode(&tracee, opcode);
+            if (tracee.state.start)
+            {
+                printf("\n%s\n", opcode);
+            }
+            cmd_op = read_command(">>");
             if (cmd_op.func_op)
             {
                 cmd_op.func_op(&tracee, cmd_op.cmdline);

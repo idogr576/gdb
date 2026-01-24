@@ -27,6 +27,7 @@ add_executable(gdb
     path_utils.c
     parser.c
     registers.c
+    x86_64.c
 )
 
 # Include headers from this directory
@@ -39,4 +40,5 @@ target_link_libraries(gdb
     PRIVATE
     logger
     elf
+    Zydis
 )

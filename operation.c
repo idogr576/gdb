@@ -7,6 +7,7 @@
 #include "symbols.h"
 #include "parser.h"
 #include "registers.h"
+#include "x86_64.h"
 
 #define BUF_SIZE 1000
 #define SEP_CHR ' '
