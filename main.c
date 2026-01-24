@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
     int wstatus;
 
     logger_initConsoleLogger(stderr);
-    // logger_setLevel(LogLevel_DEBUG);
-    logger_setLevel(LogLevel_ERROR);
+    logger_setLevel(LogLevel_DEBUG);
+    // logger_setLevel(LogLevel_ERROR);
 
     if (argc < 2)
     {

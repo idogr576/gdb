@@ -5,13 +5,17 @@
 #include "symbols.h"
 #include "parser.h"
 
-AddrType identify_addr_type(char *addr_repr, symtab *symtab)
+ValueType identify_addr_type(char *addr_repr, symtab *symtab)
 {
     if (addr_repr[0] == '*')
     {
-        return DIRECT;
+        return TYPE_ADDRESS;
     }
-    return symtab_find_sym(symtab, addr_repr) == NULL ? INVALID : SYMBOL;
+    if (addr_repr[0] == '$')
+    {
+        return TYPE_REGISTER;
+    }
+    return symtab_find_sym(symtab, addr_repr) == NULL ? TYPE_INVALID : TYPE_SYMBOL;
 }
 
 GElf_Addr parse_direct_address(char *addr_repr)
@@ -36,15 +40,14 @@ GElf_Addr parse_direct_address(char *addr_repr)
     return (GElf_Addr)-1;
 }
 
-GElf_Addr resolve_address(int pid, symtab *symtab, char *addr_repr)
+GElf_Addr resolve_address(ValueType type, pid_t pid, symtab *symtab, char *addr_repr)
 {
-    AddrType addr_type = identify_addr_type(addr_repr, symtab);
-    if (addr_type == DIRECT)
+    if (type == TYPE_ADDRESS)
     {
         LOG_DEBUG("found direct address: %s", addr_repr);
         return parse_direct_address(addr_repr);
     }
-    if (addr_type == SYMBOL)
+    if (type == TYPE_SYMBOL)
     {
         GElf_Sym *sym = symtab_find_sym(symtab, addr_repr);
         if (!sym)

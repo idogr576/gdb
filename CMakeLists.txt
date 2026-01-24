@@ -26,6 +26,7 @@ add_executable(gdb
     symbols.c
     path_utils.c
     parser.c
+    registers.c
 )
 
 # Include headers from this directory

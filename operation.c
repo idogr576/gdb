@@ -6,6 +6,7 @@
 #include "operation.h"
 #include "symbols.h"
 #include "parser.h"
+#include "registers.h"
 
 #define BUF_SIZE 1000
 #define SEP_CHR ' '
@@ -56,15 +57,29 @@ void print_op(tracee *tracee, char *cmd)
         printf("invalid command \"%s\", missing ' ' after p\n", cmd);
         return;
     }
-    GElf_Addr addr = resolve_address(tracee->pid, &tracee->symtab, ++sep);
-    if (addr == (GElf_Addr)-1)
+    ValueType type = identify_addr_type(++sep, &tracee->symtab);
+    // check if register or address
+    if (type == TYPE_REGISTER)
     {
+        reg_t reg = get_register_value(tracee, sep + 1);
+        printf("{ %s = %lld = 0x%llx }\n", sep, reg, reg);
+    }
+    else if (type == TYPE_ADDRESS || type == TYPE_SYMBOL)
+    {
+        GElf_Addr addr = resolve_address(type, tracee->pid, &tracee->symtab, sep);
+        if (addr == (GElf_Addr)-1)
+        {
 
-        printf("cannot resolve address %s\n", sep);
+            printf("cannot resolve address %s\n", sep);
+        }
+        else
+        {
+            printf("{ %s = 0x%lx }\n", sep, addr);
+        }
     }
     else
     {
-        printf("%s == 0x%lx\n", sep, addr);
+        puts("unknown value type");
     }
 }
 
