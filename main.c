@@ -16,6 +16,9 @@
 #include "tracee.h"
 #include "x86_64.h"
 
+// #define STB_DS_IMPLEMENTATION
+// #include "stb_ds.h"
+
 // define a global variable
 // char str[] = "pasten";
 
@@ -31,7 +34,7 @@ int main(int argc, char *argv[])
 
     if (argc < 2)
     {
-        printf("Usage: %s <binary_name> <binary args>\n", argv[0]);
+        printf("Usage: %s <binary path> <args>\n", argv[0]);
         goto error;
     }
     strcpy(binary_path, argv[1]);
@@ -62,6 +65,9 @@ int main(int argc, char *argv[])
         ptrace(PTRACE_SETOPTIONS, tracee.pid, 0, PTRACE_O_TRACEEXEC | PTRACE_O_EXITKILL);
         // load the symbol table before getting commands
         symtab_elf_load(binary_path, &tracee.symtab);
+        // initialize breakpoints hashmap
+        breakpoint_init(tracee.breakpoints);
+
         LOG_DEBUG("symtab: size = %d", tracee.symtab.size);
         ptrace(PTRACE_CONT, tracee.pid, 0, 0);
         /*
@@ -114,8 +120,9 @@ int main(int argc, char *argv[])
                 printf("\n%s\n", opcode);
             }
             cmd_op = read_command(">>");
-            if (!strlen(cmd_op.cmdline))
+            if (!strlen(cmd_op.cmdline) && tracee.state.start)
             {
+                // run last command again
                 cmd_op = last_cmd_op;
             }
             if (cmd_op.func_op)

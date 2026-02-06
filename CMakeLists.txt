@@ -28,6 +28,8 @@ add_executable(gdb
     parser.c
     registers.c
     x86_64.c
+    breakpoint.c
+    hashmap.c
 )
 
 # Include headers from this directory

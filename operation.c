@@ -9,6 +9,7 @@
 #include "parser.h"
 #include "registers.h"
 #include "x86_64.h"
+#include "breakpoint.h"
 
 #define BUF_SIZE 1000
 #define SEP_CHR ' '
@@ -58,46 +59,63 @@ void examine_op(tracee *tracee, char *cmd)
 void print_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation PRINT");
-    /*
-    cmd example: "p main"
-    currently, the only supported object type is symbol
-    */
-    char *sep = strchr(cmd, SEP_CHR);
-    if (!sep)
+    char buf[BUF_SIZE] = {0};
+    char fullfmt[BUF_SIZE] = {0};
+    char fmt = 'x';
+    // try to read the input
+    if (sscanf(cmd, "p/%c %s", &fmt, buf) != 2)
     {
-        printf("invalid command \"%s\", missing ' ' after p\n", cmd);
+        sscanf(cmd, "p %s", buf);
+    }
+    if (!buf)
+    {
+        LOG_ERROR("cannot read cmd to buffer");
         return;
     }
-    ValueType type = identify_addr_type(++sep, &tracee->symtab);
-    // check if register or address
-    if (type == TYPE_REGISTER)
-    {
-        reg_t reg = get_register_value(tracee, sep + 1);
-        printf("{ %s = %lld = 0x%llx }\n", sep, reg, reg);
-    }
-    else if (type == TYPE_ADDRESS || type == TYPE_SYMBOL)
-    {
-        GElf_Addr addr = resolve_address(type, tracee->pid, &tracee->symtab, sep);
-        if (addr == (GElf_Addr)-1)
-        {
+    Value val = resolve_value(tracee, buf);
 
-            printf("cannot resolve address %s\n", sep);
-        }
-        else
-        {
-            printf("{ %s = 0x%lx }\n", sep, addr);
-        }
+    if (fmt == 'd')
+    {
+        strcpy(fullfmt, "{ %s == %ld }\n");
     }
     else
     {
-        puts("unknown value type");
+        strcpy(fullfmt, "{ %s == 0x%lx }\n");
     }
+    printf(fullfmt, buf, val);
 }
 
 void breakpoint_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation BREAKPOINT");
-    LOG_DEBUG("pid is %d, cmd is \"%s\"", tracee->pid, cmd);
+    if (strlen(cmd) == 1)
+    {
+        breakpoint_list(tracee->breakpoints);
+    }
+    if (cmd[1] == ' ')
+    {
+        Value addr = resolve_value(tracee, &cmd[2]);
+        if (!addr.addr)
+        {
+            puts("address does not exists");
+        }
+        else
+        {
+            breakpoint_set(&tracee->breakpoints, tracee->pid, addr.addr);
+        }
+    }
+    if (cmd[1] == 'd')
+    {
+        Value addr = resolve_value(tracee, &cmd[3]);
+        if (!addr.addr)
+        {
+            puts("address does not exists");
+        }
+        else
+        {
+            breakpoint_unset(&tracee->breakpoints, tracee->pid, addr.addr);
+        }
+    }
 }
 
 void help_op(tracee *tracee, char *cmd)

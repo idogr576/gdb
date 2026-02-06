@@ -62,3 +62,33 @@ GElf_Addr resolve_address(ValueType type, pid_t pid, symtab *symtab, char *addr_
 error:
     return (GElf_Addr)-1;
 }
+
+Value resolve_value(tracee *tracee, char *addr_repr)
+{
+    Value ret = {0};
+    ValueType type = identify_addr_type(addr_repr, &tracee->symtab);
+    // check if register or address
+    switch (type)
+    {
+    case TYPE_REGISTER:
+        reg_t reg = get_register_value(tracee, addr_repr + 1);
+        ret.reg = reg;
+        break;
+
+    case TYPE_ADDRESS:
+    case TYPE_SYMBOL:
+        GElf_Addr addr = resolve_address(type, tracee->pid, &tracee->symtab, addr_repr);
+        if (addr == (GElf_Addr)-1)
+        {
+            LOG_ERROR("cannot resolve address %s", addr_repr);
+        }
+        else
+        {
+            ret.addr = addr;
+        }
+        break;
+    default:
+        LOG_ERROR("address does not match any kind");
+    }
+    return ret;
+}

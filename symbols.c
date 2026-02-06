@@ -28,7 +28,6 @@ void symtab_add_sym(symtab *symtab, char *sym_name, GElf_Sym *sym)
     char *new_sym_name = symtab->sym_names[size];
     strcpy(new_sym_name, sym_name);
     symtab->size++;
-    LOG_DEBUG("added symbol %s", new_sym_name);
 }
 
 /*
