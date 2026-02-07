@@ -12,7 +12,6 @@
 #include "breakpoint.h"
 #include "data_utils.h"
 
-
 void run_op(tracee *tracee, char *cmd)
 {
     if (tracee->state.start)
@@ -37,6 +36,7 @@ void continue_op(tracee *tracee, char *cmd)
         return;
     }
     tracee->state.is_running = true;
+    breakpoint_step(tracee);
     ptrace(PTRACE_CONT, tracee->pid, 0, 0);
 }
 
@@ -45,6 +45,7 @@ void next_op(tracee *tracee, char *cmd)
     LOG_DEBUG("operation NEXT");
     if (tracee->state.start && !tracee->state.is_running)
     {
+        breakpoint_step(tracee);
         ptrace(PTRACE_SINGLESTEP, tracee->pid, 0, 0);
         tracee->state.is_running = true;
     }
@@ -118,7 +119,7 @@ void breakpoint_op(tracee *tracee, char *cmd)
     LOG_DEBUG("operation BREAKPOINT");
     if (strlen(cmd) == 1)
     {
-        breakpoint_list(tracee->breakpoints);
+        breakpoint_list(tracee);
     }
     if (cmd[1] == ' ')
     {
@@ -129,7 +130,7 @@ void breakpoint_op(tracee *tracee, char *cmd)
         }
         else
         {
-            breakpoint_set(&tracee->breakpoints, tracee->pid, addr.addr);
+            breakpoint_set(tracee, addr.addr);
         }
     }
     if (cmd[1] == 'd')
@@ -141,7 +142,7 @@ void breakpoint_op(tracee *tracee, char *cmd)
         }
         else
         {
-            breakpoint_unset(&tracee->breakpoints, tracee->pid, addr.addr);
+            breakpoint_unset(tracee, addr.addr);
         }
     }
 }

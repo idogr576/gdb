@@ -40,3 +40,21 @@ reg_t get_register_value(tracee *tracee, char *reg_name)
     LOG_ERROR("register \"%s\" not found", reg_name);
     return 0;
 }
+
+error_t set_register_value(tracee *tracee, char *reg_name, reg_t value)
+{
+    struct user_regs_struct regs = get_tracee_registers(tracee);
+    reg_t *regp = (reg_t *)&regs;
+    for (int i = 0; i < COUNT_REGS(regs); i++)
+    {
+        if (!strcmp(reg_name, defined_regs[i]))
+        {
+            LOG_DEBUG("matching register %s\n", defined_regs[i]);
+            break;
+        }
+        regp++;
+    }
+    *regp = value;
+    ptrace(PTRACE_SETREGS, tracee->pid, 0, &regs);
+    return 0;
+}

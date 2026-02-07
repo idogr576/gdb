@@ -1,5 +1,6 @@
-#include "hashmap.h"
 #include <logger.h>
+
+#include "hashmap.h"
 
 void hminit(hash_t hash)
 {
@@ -32,7 +33,7 @@ void hmdel(hash_t *hash, GElf_Addr key)
 
 hash_t hmfind(hash_t hash, GElf_Addr key)
 {
-    HashEntry *found = NULL;
+    hash_t found = NULL;
     HASH_FIND(hh, hash, &key, sizeof(key), found);
     return found;
 }

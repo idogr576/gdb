@@ -15,6 +15,7 @@
 #include "path_utils.h"
 #include "tracee.h"
 #include "x86_64.h"
+#include "breakpoint.h"
 
 // #define STB_DS_IMPLEMENTATION
 // #include "stb_ds.h"
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
         // load the symbol table before getting commands
         symtab_elf_load(binary_path, &tracee.symtab);
         // initialize breakpoints hashmap
-        breakpoint_init(tracee.breakpoints);
+        breakpoint_init(&tracee);
 
         LOG_DEBUG("symtab: size = %d", tracee.symtab.size);
         ptrace(PTRACE_CONT, tracee.pid, 0, 0);

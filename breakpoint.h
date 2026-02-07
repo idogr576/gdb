@@ -2,12 +2,16 @@
 #include <gelf.h>
 #include <sys/types.h>
 
-#include "hashmap.h"
+#include "tracee.h"
 
-void breakpoint_init(hash_t hash);
+void breakpoint_init(tracee *tracee);
 
-void breakpoint_list(hash_t hash);
+void breakpoint_list(tracee *tracee);
 
-void breakpoint_set(hash_t *hash, pid_t pid, GElf_Addr addr);
+void breakpoint_set(tracee *tracee, GElf_Addr addr);
 
-void breakpoint_unset(hash_t *hash, pid_t pid, GElf_Addr addr);
+void breakpoint_unset(tracee *tracee, GElf_Addr addr);
+
+void breakpoint_step(tracee *tracee);
+
+char breakpoint_memset(tracee *tracee, GElf_Addr addr, char value);
