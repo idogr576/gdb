@@ -39,14 +39,19 @@ void breakpoint_set(hash_t *hash, pid_t pid, GElf_Addr addr)
         printf("breakpoint at 0x%lx already set\n", addr);
         return;
     }
-    char orig_data = (char)ptrace(PTRACE_PEEKDATA, pid, addr, 0);
+    union
+    {
+        void *word;
+        char byte;
+    } data;
+    data.word = (void *)ptrace(PTRACE_PEEKDATA, pid, addr, 0);
     // if (ptrace(PTRACE_POKEDATA, pid, addr, BP_OPCODE) == -1)
     // {
     //     LOG_DEBUG("got error in breakpoint set!");
     //     perror("");
     //     return;
     // }
-    hmput(hash, addr, orig_data);
+    hmput(hash, addr, data.byte);
     // hash_t e = malloc(sizeof(*e));
     // if (!e)
     // {
@@ -56,7 +61,10 @@ void breakpoint_set(hash_t *hash, pid_t pid, GElf_Addr addr)
     // e->key = addr;
     // e->value = orig_data;
     // HASH_ADD(hh, *hash, key, sizeof(e->key), e);
-    ptrace(PTRACE_POKEDATA, pid, addr, 0xcc);
+
+    // assign int3 value
+    data.byte = 0xcc;
+    ptrace(PTRACE_POKEDATA, pid, addr, data.word);
     printf("added new breakpoint at *0x%lx\n", addr);
     LOG_DEBUG("%d\n", HASH_COUNT(*hash));
 }
