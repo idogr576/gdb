@@ -56,6 +56,7 @@ void breakpoint_set(hash_t *hash, pid_t pid, GElf_Addr addr)
     // e->key = addr;
     // e->value = orig_data;
     // HASH_ADD(hh, *hash, key, sizeof(e->key), e);
+    ptrace(PTRACE_POKEDATA, pid, addr, 0xcc);
     printf("added new breakpoint at *0x%lx\n", addr);
     LOG_DEBUG("%d\n", HASH_COUNT(*hash));
 }

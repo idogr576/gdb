@@ -7,3 +7,5 @@
 #define OPCODE_MAX_REPR 256
 
 void get_current_opcode(tracee *tracee, char *opcode);
+
+void x86_64_disassemble(tracee *tracee, GElf_Addr addr, size_t opcodes);

@@ -30,6 +30,7 @@ add_executable(gdb
     x86_64.c
     breakpoint.c
     hashmap.c
+    data_utils.c
 )
 
 # Include headers from this directory

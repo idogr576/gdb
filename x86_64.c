@@ -41,20 +41,52 @@ void get_current_opcode(tracee *tracee, char *opcode)
                                     runtime_address, ZYAN_NULL);
 
     sprintf(opcode, "%016" PRIX64 "  %s", runtime_address, buffer);
+}
 
-    // // 3. Loop and Decode - not for now
-    // while (ZYAN_SUCCESS(ZydisDecoderDecodeFull(&decoder, data + offset, sizeof(data) - offset,
-    //                                            &instruction, operands)))
-    // {
+void x86_64_disassemble(tracee *tracee, GElf_Addr addr, size_t opcodes)
+{
+    char buffer[OPCODE_MAX_REPR];
+    ZyanU8 data[BUFSIZ] = {0};
+    ZyanU64 runtime_address = addr;
+    for (int i = 0; i < OPCODE_MAX_SIZE * opcodes; i++)
+    {
+        data[i] = (ZyanU8)ptrace(PTRACE_PEEKDATA, tracee->pid, runtime_address + i, 0);
+    }
+    // 1. Initialize Decoder
+    ZydisDecoder decoder;
+    ZydisDecoderInit(&decoder, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_STACK_WIDTH_64);
 
-    //     // Format the instruction into our buffer
-    //     ZydisFormatterFormatInstruction(&formatter, &instruction, operands,
-    //                                     instruction.operand_count_visible, buffer, sizeof(buffer),
-    //                                     runtime_address, ZYAN_NULL);
+    // 2. Initialize Formatter
+    ZydisFormatter formatter;
+    ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
 
-    //     printf("%016" PRIX64 "  %s\n", runtime_address, buffer);
+    ZydisDecodedInstruction instruction;
+    ZydisDecodedOperand operands[ZYDIS_MAX_OPERAND_COUNT];
+    ZyanUSize offset = 0;
+    ZydisDecoderDecodeFull(&decoder, data + offset, sizeof(data) - offset, &instruction, operands);
 
-    //     offset += instruction.length;
-    //     runtime_address += instruction.length;
-    // }
+    // Format the instruction into our buffer
+    ZydisFormatterFormatInstruction(&formatter, &instruction, operands,
+                                    instruction.operand_count_visible, buffer, sizeof(buffer),
+                                    runtime_address, ZYAN_NULL);
+
+    // 3. Loop and Decode - not for now
+    while (ZYAN_SUCCESS(ZydisDecoderDecodeFull(&decoder, data + offset, sizeof(data) - offset,
+                                               &instruction, operands)))
+    {
+
+        if (!opcodes--)
+        {
+            break;
+        }
+        // Format the instruction into our buffer
+        ZydisFormatterFormatInstruction(&formatter, &instruction, operands,
+                                        instruction.operand_count_visible, buffer, sizeof(buffer),
+                                        runtime_address, ZYAN_NULL);
+
+        printf("%016" PRIX64 "  %s\n", runtime_address, buffer);
+
+        offset += instruction.length;
+        runtime_address += instruction.length;
+    }
 }

@@ -10,9 +10,8 @@
 #include "registers.h"
 #include "x86_64.h"
 #include "breakpoint.h"
+#include "data_utils.h"
 
-#define BUF_SIZE 1000
-#define SEP_CHR ' '
 
 void run_op(tracee *tracee, char *cmd)
 {
@@ -54,13 +53,42 @@ void next_op(tracee *tracee, char *cmd)
 void examine_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation EXAMINE");
+    char buf[BUFSIZ] = {0};
+    char fullfmt[BUFSIZ] = {0};
+    char fmt = 'x';
+    int n = 1;
+    // try to read the input
+    if (sscanf(cmd, "x/%d%c %s", &n, &fmt, buf) != 3 || !buf)
+    {
+        LOG_ERROR("cannot read cmd to buffer");
+        return;
+    }
+    Value val = resolve_value(tracee, buf);
+
+    if (fmt == 'i')
+    {
+        x86_64_disassemble(tracee, val.addr, n);
+        return;
+    }
+    if (fmt == 'x' || fmt == 'd')
+    {
+        int data[BUFSIZ] = {0};
+        LOG_DEBUG("read %ld bytes", read_tracee_mem(tracee, val.addr, data, n));
+        for (int i = 0; i < n; i++)
+        {
+            if (fmt == 'x')
+                printf("[0x%lx] 0x%lx\n", val.addr + i * sizeof(*data), data[i]);
+            if (fmt == 'd')
+                printf("[0x%lx] 0x%d\n", val.addr + i * sizeof(*data), data[i]);
+        }
+    }
 }
 
 void print_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation PRINT");
-    char buf[BUF_SIZE] = {0};
-    char fullfmt[BUF_SIZE] = {0};
+    char buf[BUFSIZ] = {0};
+    char fullfmt[BUFSIZ] = {0};
     char fmt = 'x';
     // try to read the input
     if (sscanf(cmd, "p/%c %s", &fmt, buf) != 2)
@@ -120,9 +148,9 @@ void breakpoint_op(tracee *tracee, char *cmd)
 
 void help_op(tracee *tracee, char *cmd)
 {
-    char buffer[BUF_SIZE] = {0};
+    char buffer[BUFSIZ] = {0};
     FILE *helpfp = fopen("./docs/help.txt", "r");
-    fread(buffer, sizeof(*buffer), BUF_SIZE, helpfp);
+    fread(buffer, sizeof(*buffer), BUFSIZ, helpfp);
     puts(buffer);
 }
 
