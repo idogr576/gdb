@@ -66,7 +66,7 @@ void breakpoint_set(hash_t *hash, pid_t pid, GElf_Addr addr)
     data.byte = 0xcc;
     ptrace(PTRACE_POKEDATA, pid, addr, data.word);
     printf("added new breakpoint at *0x%lx\n", addr);
-    LOG_DEBUG("%d\n", HASH_COUNT(*hash));
+    LOG_DEBUG("there are now %d breakpoints\n", HASH_COUNT(*hash));
 }
 
 void breakpoint_unset(hash_t *hash, pid_t pid, GElf_Addr addr)
@@ -84,6 +84,21 @@ void breakpoint_unset(hash_t *hash, pid_t pid, GElf_Addr addr)
     //     return;
     // }
     // hmdel(hash, addr);
+    hash_t found = hmfind(*hash, addr);
+    if (!found)
+    {
+        printf("did not find breakpoint at 0x%lx\n", addr);
+        return;
+    }
+    union
+    {
+        void *word;
+        char byte;
+    } data;
+    data.word = (void *)ptrace(PTRACE_PEEKDATA, pid, addr, 0);
+    data.byte = found->value;
+
+    ptrace(PTRACE_POKEDATA, pid, addr, data.word);
     hmdel(hash, addr);
     printf("deleted breakpoint at 0x%lx\n", addr);
 }
