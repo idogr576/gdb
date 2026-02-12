@@ -3,6 +3,8 @@
 #include <bits/types/error_t.h>
 #include "tracee.h"
 
+#define COUNT_REGS(regs) (sizeof(regs) / sizeof(reg_t))
+
 typedef unsigned long long reg_t;
 
 extern const char *defined_regs[];

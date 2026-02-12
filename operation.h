@@ -19,4 +19,4 @@ void help_op(tracee *tracee, char *cmd);
 
 void quit_op(tracee *tracee, char *cmd);
 
-void list_op(tracee *tracee, char *cmd);
+void info_op(tracee *tracee, char *cmd);

@@ -160,7 +160,37 @@ void quit_op(tracee *tracee, char *cmd)
     puts("Goodby from gdb!");
 }
 
-void list_op(tracee *tracee, char *cmd)
+void info_op(tracee *tracee, char *cmd)
 {
-    LOG_DEBUG("operation LIST");
+    LOG_DEBUG("INFO OPERATION");
+    char type;
+    if (sscanf(cmd, "i %c", &type) != 1)
+    {
+        LOG_ERROR("invalid input");
+        return;
+    }
+    // symbols
+    if (type == 's')
+    {
+        GElf_Addr base_addr = symtab_get_dyn_sym_addr(tracee->pid, tracee->symtab.symbols);
+        for (size_t i = 0; i < tracee->symtab.size; i++)
+        {
+            GElf_Addr sym_value = tracee->symtab.symbols[i].st_value;
+            printf("0x%lx\t%s\n", base_addr + sym_value, tracee->symtab.sym_names[i]);
+        }
+    }
+    else if (type == 'r')
+    {
+        struct user_regs_struct regs = get_tracee_registers(tracee);
+        reg_t *reg = &regs;
+        for (size_t i = 0; i < COUNT_REGS(regs); i++, reg++)
+        {
+            printf("\$%s\t= 0x%lx\n", defined_regs[i], *reg);
+        }
+    }
+    else
+    {
+        puts("undefined option after i(nfo)");
+    }
+    puts("");
 }

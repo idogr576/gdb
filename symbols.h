@@ -15,8 +15,8 @@ https://sourceware.org/git/?p=elfutils.git;a=blob;f=src/nm.c;h=40b192f67b924eaba
 #include <libelf.h>
 #include <gelf.h>
 
-#define SYMTAB_SIZE 1000
-#define SYM_MAX_LEN 100
+#define SYMTAB_SIZE 1024
+#define SYM_MAX_LEN 128
 
 typedef struct symbolTable
 {

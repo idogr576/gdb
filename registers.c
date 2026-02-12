@@ -6,8 +6,6 @@
 #include "registers.h"
 #include "tracee.h"
 
-#define COUNT_REGS(regs) (sizeof(regs) / sizeof(reg_t))
-
 const char *defined_regs[] = {"r15", "r14", "r13", "r12",
                               "rbp", "rbx", "r11", "r10", "r9", "r8", "rax",
                               "rcx", "rdx", "rsi", "rdi", "orig_rax", "rip",

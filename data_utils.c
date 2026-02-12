@@ -12,7 +12,7 @@ size_t read_tracee_mem(tracee *tracee, long *addr, int *data, size_t n)
 {
     int retval;
     size_t read_size = 0;
-    for (int i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
     {
         errno = 0;
         retval = (int)ptrace(PTRACE_PEEKDATA, tracee->pid, addr + i, 0);

@@ -70,8 +70,8 @@ command_op read_command(char *prefix)
         cmd_op.func_op = quit_op;
         break;
 
-    case 'l':
-        cmd_op.func_op = list_op;
+    case 'i':
+        cmd_op.func_op = info_op;
         break;
 
     default:

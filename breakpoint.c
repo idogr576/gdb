@@ -30,7 +30,7 @@ void breakpoint_list(tracee *tracee)
     int i = 0;
     HASH_ITER(hh, tracee->breakpoints, current, tmp)
     {
-        printf("[%d] *0x%lx\n", i++, current->key);
+        printf("[%d]\t*0x%lx\n", i++, current->key);
     }
     puts("");
 }

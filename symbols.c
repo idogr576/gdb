@@ -13,7 +13,6 @@
 #include "symbols.h"
 
 #define PATH_MAX_LEN 100
-#define BUFFER_SIZE 10000
 
 void symtab_init(symtab *symtab)
 {
@@ -112,7 +111,7 @@ GElf_Addr symtab_get_dyn_sym_addr(pid_t pid, GElf_Sym *sym)
     // sleep(1); // a patch to wait for the ./test to load by execv
     char maps[PATH_MAX_LEN] = {0};
     char procname[PATH_MAX_LEN] = {0};
-    char buff[BUFFER_SIZE] = {0};
+    char buff[BUFSIZ] = {0};
     char *sep;
     FILE *fp;
     GElf_Addr base_addr, sym_addr = (GElf_Addr){0};
