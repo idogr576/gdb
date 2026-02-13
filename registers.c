@@ -1,6 +1,7 @@
 #include <sys/ptrace.h>
 #include <sys/user.h>
 #include <string.h>
+#include <gelf.h>
 #include <logger.h>
 
 #include "registers.h"
@@ -55,4 +56,10 @@ error_t set_register_value(tracee *tracee, char *reg_name, reg_t value)
     *regp = value;
     ptrace(PTRACE_SETREGS, tracee->pid, 0, &regs);
     return 0;
+}
+
+GElf_Addr get_program_counter(tracee *tracee)
+{
+    struct user_regs_struct regs = get_tracee_registers(tracee);
+    return (GElf_Addr)regs.rip;
 }

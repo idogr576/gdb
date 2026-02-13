@@ -114,7 +114,7 @@ void breakpoint_step(tracee *tracee)
 
     // step 4
     ptrace(PTRACE_SINGLESTEP, tracee->pid, 0, 0);
-    waitpid(tracee->pid, NULL, 0);
+    waitpid(tracee->pid, 0, 0);
 
     // step 5
     breakpoint_memset(tracee, bprip, BP_OPCODE);

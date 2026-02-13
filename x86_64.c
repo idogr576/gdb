@@ -1,6 +1,7 @@
 #include <sys/ptrace.h>
 #include <inttypes.h>
 #include <Zydis/Zydis.h>
+#include <stdbool.h>
 #include <logger.h>
 
 #include "x86_64.h"
@@ -9,7 +10,7 @@
 
 void get_current_opcode(tracee *tracee, char *opcode)
 {
-    reg_t rip = get_register_value(tracee, "rip");
+    reg_t rip = get_program_counter(tracee);
     char buffer[OPCODE_MAX_REPR];
     if (!rip)
     {
