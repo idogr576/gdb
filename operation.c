@@ -3,6 +3,7 @@
 #include <logger.h>
 #include <string.h>
 #include <stdbool.h>
+#include <inttypes.h>
 
 #include "operation.h"
 #include "symbols.h"
@@ -20,9 +21,9 @@ void run_op(tracee *tracee, char *cmd)
         return;
     }
     LOG_DEBUG("operarion RUN");
-    PRINT("-----------------------------\n");
-    PRINT("starting execution of program\n");
-    PRINT("-----------------------------\n");
+    PRINT(YELLOW("-----------------------------\n"));
+    PRINT(YELLOW("starting execution of program\n"));
+    PRINT(YELLOW("-----------------------------")"\n");
     tracee->state.start = true;
     tracee->state.is_running = true;
     ptrace(PTRACE_CONT, tracee->pid, 0, 0);
@@ -41,7 +42,7 @@ void continue_op(tracee *tracee, char *cmd)
     ptrace(PTRACE_CONT, tracee->pid, 0, 0);
 }
 
-void step_op(tracee *tracee, char *cmd)
+void next_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation STEP");
     if (tracee->state.start && !tracee->state.is_running)
@@ -72,17 +73,46 @@ void examine_op(tracee *tracee, char *cmd)
         x86_64_disassemble(tracee, val.addr, n);
         return;
     }
-    if (fmt == 'x' || fmt == 'd')
+    if (!strchr("xdbcs", fmt))
     {
-        int data[BUFSIZ] = {0};
-        LOG_DEBUG("read %ld bytes", read_tracee_mem(tracee, val.addr, data, n));
-        for (int i = 0; i < n; i++)
+        return;
+    }
+    uint8_t data[BUFSIZ] = {0};
+    size_t size = read_tracee_mem(tracee, val.addr, data, n);
+    LOG_DEBUG("read %ld bytes", size);
+    if (fmt == 's')
+    {
+        PRINT(BLUE("%016" PRIX64) " %s\n", val.addr, data);
+        return;
+    }
+    bool print_warning = true;
+    for (int i = 0; i < n; i++)
+    {
+        if (fmt == 'x')
         {
-            if (fmt == 'x')
-                PRINT(BLUE("[0x%lx]")" 0x%lx\n", val.addr + i * sizeof(*data), data[i]);
-            if (fmt == 'd')
-                PRINT(BLUE("[0x%lx]")" 0x%d\n", val.addr + i * sizeof(*data), data[i]);
+            // TODO: does not display right data
+            if(print_warning) PRINT(RED("WARNING: this formatting method is not accurate\n"));
+            uint32_t *p = data;
+            PRINT(BLUE("%016" PRIX64) " 0x%08lx\n", val.addr + i * sizeof(*p), p[i]);
         }
+        if (fmt == 'd')
+        {
+            // TODO: does not display right data
+            if(print_warning) PRINT(RED("WARNING: this formatting method is not accurate\n"));
+            int32_t *p = data;
+            PRINT(BLUE("%016" PRIX64) " %d\n", val.addr + i * sizeof(*p), p[i]);
+        }
+        if (fmt == 'b')
+        {
+            uint8_t *p = data;
+            PRINT(BLUE("%016" PRIX64) " 0x%02hhx\n", val.addr + i * sizeof(*p), p[i]);
+        }
+        if (fmt == 'c')
+        {
+            char *p = data;
+            PRINT(BLUE("%016" PRIX64) " %c\n", val.addr + i * sizeof(*p), p[i]);
+        }
+        print_warning = false;
     }
 }
 
@@ -158,7 +188,7 @@ void help_op(tracee *tracee, char *cmd)
 
 void quit_op(tracee *tracee, char *cmd)
 {
-    PRINT(BLUE("Goodby from gdb!\n"));
+    PRINT(YELLOW("Goodby from gdb!\n"));
 }
 
 void info_op(tracee *tracee, char *cmd)
@@ -177,7 +207,7 @@ void info_op(tracee *tracee, char *cmd)
         for (size_t i = 0; i < tracee->symtab.size; i++)
         {
             GElf_Addr sym_value = tracee->symtab.symbols[i].st_value;
-            PRINT(BLUE("0x%lx\t")"%s\n", base_addr + sym_value, tracee->symtab.sym_names[i]);
+            PRINT(BLUE("0x%016lx\t") "%s\n", base_addr + sym_value, tracee->symtab.sym_names[i]);
         }
     }
     else if (type == 'r')
@@ -186,7 +216,7 @@ void info_op(tracee *tracee, char *cmd)
         reg_t *reg = &regs;
         for (size_t i = 0; i < COUNT_REGS(regs); i++, reg++)
         {
-            PRINT(BLUE("\$%s\t")"= 0x%lx\n", defined_regs[i], *reg);
+            PRINT(BLUE("\$%s\t") "= 0x%lx\n", defined_regs[i], *reg);
         }
     }
     else

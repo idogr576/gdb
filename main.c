@@ -16,6 +16,7 @@
 #include "tracee.h"
 #include "x86_64.h"
 #include "breakpoint.h"
+#include "print.h"
 
 // #define STB_DS_IMPLEMENTATION
 // #include "stb_ds.h"
@@ -23,7 +24,6 @@
 // define a global variable
 // char str[] = "pasten";
 
-#include "print.h"
 int main(int argc, char *argv[])
 {
     char binary_path[PATH_MAX_LEN] = {0};
