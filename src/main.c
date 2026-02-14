@@ -11,10 +11,10 @@
 
 #include "cli.h"
 #include "operation.h"
-#include "symbols.h"
-#include "path_utils.h"
+#include "elf/symbols.h"
+#include "utils/path_utils.h"
 #include "tracee.h"
-#include "x86_64.h"
+#include "arch/x86_64.h"
 #include "breakpoint.h"
 #include "print.h"
 

@@ -1,8 +1,8 @@
 #pragma once
 #include <sys/types.h>
 #include <stdbool.h>
-#include "symbols.h"
-#include "hashmap.h"
+#include "elf/symbols.h"
+#include "utils/hashmap.h"
 
 typedef struct tracee_state
 {

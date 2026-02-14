@@ -6,7 +6,7 @@
 
 #include "breakpoint.h"
 #include "registers.h"
-#include "hashmap.h"
+#include "utils/hashmap.h"
 #include "print.h"
 
 #define BP_OPCODE 0xcc

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "logger.h"
 
-#include "path_utils.h"
+#include "utils/path_utils.h"
 
 bool binary_path_exists(char *binary_path)
 {

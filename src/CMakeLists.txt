@@ -25,14 +25,14 @@ add_executable(gdb
     breakpoint.c
     cli.c
     operation.c
-    symbols.c
-    path_utils.c
-    parser.c
     registers.c
-    x86_64.c
     breakpoint.c
-    hashmap.c
-    data_utils.c
+    elf/symbols.c
+    arch/x86_64.c
+    utils/path_utils.c
+    utils/parser.c
+    utils/hashmap.c
+    utils/data_utils.c
 )
 
 # Include headers from this directory

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "logger.h"
 
-#include "x86_64.h"
+#include "arch/x86_64.h"
 #include "registers.h"
 #include "tracee.h"
 #include "print.h"

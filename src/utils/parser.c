@@ -2,8 +2,8 @@
 #include <string.h>
 #include "logger.h"
 
-#include "symbols.h"
-#include "parser.h"
+#include "elf/symbols.h"
+#include "utils/parser.h"
 
 ValueType identify_addr_type(char *addr_repr, symtab *symtab)
 {

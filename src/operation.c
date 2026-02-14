@@ -6,12 +6,12 @@
 #include <inttypes.h>
 
 #include "operation.h"
-#include "symbols.h"
-#include "parser.h"
+#include "elf/symbols.h"
+#include "utils/parser.h"
 #include "registers.h"
-#include "x86_64.h"
+#include "arch/x86_64.h"
 #include "breakpoint.h"
-#include "data_utils.h"
+#include "utils/data_utils.h"
 #include "print.h"
 
 void run_op(tracee *tracee, char *cmd)

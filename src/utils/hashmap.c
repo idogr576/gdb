@@ -1,6 +1,6 @@
 #include "logger.h"
 
-#include "hashmap.h"
+#include "utils/hashmap.h"
 
 void hminit(hm_t hash)
 {

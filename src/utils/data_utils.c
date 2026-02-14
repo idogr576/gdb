@@ -3,7 +3,7 @@
 #include "logger.h"
 #include <gelf.h>
 
-#include "data_utils.h"
+#include "utils/data_utils.h"
 
 /*
 read size bytes from tracee memory at address addr.

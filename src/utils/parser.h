@@ -2,7 +2,7 @@
 #include <gelf.h>
 #include <sys/types.h>
 
-#include "symbols.h"
+#include "elf/symbols.h"
 #include "registers.h"
 #include "tracee.h"
 

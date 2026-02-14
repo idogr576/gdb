@@ -10,7 +10,7 @@
 #include <stdbool.h>
 
 #include "logger.h"
-#include "symbols.h"
+#include "elf/symbols.h"
 
 #define PATH_MAX_LEN 100
 
