@@ -43,7 +43,6 @@ target_include_directories(gdb PRIVATE
 # Link against your logger shared library
 target_link_libraries(gdb
     PRIVATE
-    logger
     elf
     Zydis
     readline

@@ -1,10 +1,19 @@
 # gdb
-making my own version of gdb for linux
+Making my own version of gdb for linux!
 
 # deps
 ```bash
 sudo apt-get update
-sudo apt install libelf-dev
-sudo apt-get install libzydis-dev zydis-tools
-sudo apt install libreadline-dev
+# if cmake not installed
+sudo apt install cmake
+# install dependencies
+sudo apt install cmake libelf-dev libzydis-dev zydis-tools libreadline-dev
 ```
+
+# compile and run
+Run
+```bash
+cmake .
+cmake --build .
+```
+A new binary `./gdb` will be created, thats it!
