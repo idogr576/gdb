@@ -125,7 +125,7 @@ GElf_Addr symtab_get_dyn_sym_addr(pid_t pid, GElf_Sym *sym)
         LOG_ERROR("cannot open %s for reading", maps);
         goto ret;
     }
-    fgets(buff, sizeof(buff), fopen(procname, "r"));
+    // fgets(buff, sizeof(buff), fopen(procname, "r"));
     fgets(buff, sizeof(buff), fp);
 
     sep = strchr(buff, '-');

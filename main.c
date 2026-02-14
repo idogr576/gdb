@@ -114,6 +114,7 @@ int main(int argc, char *argv[])
         // start the main loop
         char opcode[OPCODE_MAX_REPR] = {0};
         command_op cmd_op, last_cmd_op;
+        cli_init();
         do
         {
             if (tracee.state.start)

@@ -1,5 +1,7 @@
 #define _GNU_SOURCE
 #include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -9,20 +11,31 @@
 #include "operation.h"
 #include "print.h"
 
+
+void cli_init()
+{
+    rl_bind_key('\t', NULL);
+}
+
 command_op read_command(char *prefix)
 {
-    size_t maxsize = 0;
     char *cmdline = NULL;
+    char prompt[MAX_PROMPT_SIZE] = {0};
     char chr_op;
     command_op cmd_op = {NULL, NULL};
 
     rewind(stdin);
-    PRINT(YELLOW("%s "), prefix);
+    sprintf(prompt, YELLOW("%s "), prefix);
 
-    if (getline(&cmdline, &maxsize, stdin) == -1)
+    cmdline = readline(prompt);
+    if (!cmdline)
     {
         LOG_DEBUG("cannot read line from user");
         goto error;
+    }
+    if (*cmdline)
+    {
+        add_history(cmdline);
     }
 
     // remove trailing '\n' from cmdline

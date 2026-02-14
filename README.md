@@ -6,4 +6,5 @@ making my own version of gdb for linux
 sudo apt-get update
 sudo apt install libelf-dev
 sudo apt-get install libzydis-dev zydis-tools
+sudo apt install libreadline-dev
 ```

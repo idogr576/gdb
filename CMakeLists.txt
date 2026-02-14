@@ -44,4 +44,5 @@ target_link_libraries(gdb
     logger
     elf
     Zydis
+    readline
 )

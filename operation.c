@@ -207,7 +207,7 @@ void info_op(tracee *tracee, char *cmd)
         for (size_t i = 0; i < tracee->symtab.size; i++)
         {
             GElf_Addr sym_value = tracee->symtab.symbols[i].st_value;
-            PRINT(BLUE("0x%016lx\t") "%s\n", base_addr + sym_value, tracee->symtab.sym_names[i]);
+            PRINT(BLUE("0x%016lx") " %s\n", base_addr + sym_value, tracee->symtab.sym_names[i]);
         }
     }
     else if (type == 'r')
@@ -216,7 +216,7 @@ void info_op(tracee *tracee, char *cmd)
         reg_t *reg = &regs;
         for (size_t i = 0; i < COUNT_REGS(regs); i++, reg++)
         {
-            PRINT(BLUE("\$%s\t") "= 0x%lx\n", defined_regs[i], *reg);
+            PRINT(BLUE("%8s") " = 0x%lx\n", defined_regs[i], *reg);
         }
     }
     else
