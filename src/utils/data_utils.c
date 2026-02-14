@@ -1,0 +1,30 @@
+#include <sys/ptrace.h>
+#include <errno.h>
+#include "logger.h"
+#include <gelf.h>
+
+#include "utils/data_utils.h"
+
+/*
+read size bytes from tracee memory at address addr.
+return the number of bytes read. on success, the return value will be equal to size.
+*/
+size_t read_tracee_mem(tracee *tracee, GElf_Addr addr, uint8_t *data, size_t n)
+{
+    uint8_t retval;
+    size_t read_size = 0;
+    for (size_t i = 0; i < n; i++)
+    {
+        errno = 0;
+        retval = (uint8_t)ptrace(PTRACE_PEEKDATA, tracee->pid, addr + i * sizeof(*data), 0);
+        if (!errno)
+        {
+            data[i] = retval;
+            read_size += sizeof(retval);
+            continue;
+        }
+        LOG_ERROR("error in reading tracee's mem: %s", strerror(errno));
+        break;
+    }
+    return read_size;
+}

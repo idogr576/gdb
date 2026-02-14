@@ -1,0 +1,10 @@
+Available Commands:
+R/r - start program
+C/c - continue execution of program
+N/n - step to next instruction
+X/x - examine memory and registers
+P/p - print variables and registers values
+B/b - set software breakpoints
+I/i - show info on symbols / registers / other
+Q/q - quit gdb
+H/h - print this help message
