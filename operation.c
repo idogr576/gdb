@@ -11,6 +11,7 @@
 #include "x86_64.h"
 #include "breakpoint.h"
 #include "data_utils.h"
+#include "print.h"
 
 void run_op(tracee *tracee, char *cmd)
 {
@@ -19,9 +20,9 @@ void run_op(tracee *tracee, char *cmd)
         return;
     }
     LOG_DEBUG("operarion RUN");
-    puts("-----------------------------");
-    puts("starting execution of program");
-    puts("-----------------------------");
+    PRINT("-----------------------------\n");
+    PRINT("starting execution of program\n");
+    PRINT("-----------------------------\n");
     tracee->state.start = true;
     tracee->state.is_running = true;
     ptrace(PTRACE_CONT, tracee->pid, 0, 0);
@@ -32,7 +33,7 @@ void continue_op(tracee *tracee, char *cmd)
     LOG_DEBUG("operation CONTINUE");
     if (!tracee->state.start)
     {
-        puts("start execution with \"r\"");
+        PRINT(RED("start execution with \"r\"\n"));
         return;
     }
     tracee->state.is_running = true;
@@ -40,9 +41,9 @@ void continue_op(tracee *tracee, char *cmd)
     ptrace(PTRACE_CONT, tracee->pid, 0, 0);
 }
 
-void next_op(tracee *tracee, char *cmd)
+void step_op(tracee *tracee, char *cmd)
 {
-    LOG_DEBUG("operation NEXT");
+    LOG_DEBUG("operation STEP");
     if (tracee->state.start && !tracee->state.is_running)
     {
         breakpoint_step(tracee);
@@ -78,9 +79,9 @@ void examine_op(tracee *tracee, char *cmd)
         for (int i = 0; i < n; i++)
         {
             if (fmt == 'x')
-                printf("[0x%lx] 0x%lx\n", val.addr + i * sizeof(*data), data[i]);
+                PRINT(BLUE("[0x%lx]")" 0x%lx\n", val.addr + i * sizeof(*data), data[i]);
             if (fmt == 'd')
-                printf("[0x%lx] 0x%d\n", val.addr + i * sizeof(*data), data[i]);
+                PRINT(BLUE("[0x%lx]")" 0x%d\n", val.addr + i * sizeof(*data), data[i]);
         }
     }
 }
@@ -111,7 +112,7 @@ void print_op(tracee *tracee, char *cmd)
     {
         strcpy(fullfmt, "{ %s == 0x%lx }\n");
     }
-    printf(fullfmt, buf, val);
+    PRINT(fullfmt, buf, val);
 }
 
 void breakpoint_op(tracee *tracee, char *cmd)
@@ -126,7 +127,7 @@ void breakpoint_op(tracee *tracee, char *cmd)
         Value addr = resolve_value(tracee, &cmd[2]);
         if (!addr.addr)
         {
-            puts("address does not exists");
+            PRINT(RED("address does not exists\n"));
         }
         else
         {
@@ -138,7 +139,7 @@ void breakpoint_op(tracee *tracee, char *cmd)
         Value addr = resolve_value(tracee, &cmd[3]);
         if (!addr.addr)
         {
-            puts("address does not exists");
+            PRINT(RED("address does not exists\n"));
         }
         else
         {
@@ -152,12 +153,12 @@ void help_op(tracee *tracee, char *cmd)
     char buffer[BUFSIZ] = {0};
     FILE *helpfp = fopen("./docs/help.txt", "r");
     fread(buffer, sizeof(*buffer), BUFSIZ, helpfp);
-    puts(buffer);
+    PRINT("%s\n", buffer);
 }
 
 void quit_op(tracee *tracee, char *cmd)
 {
-    puts("Goodby from gdb!");
+    PRINT(BLUE("Goodby from gdb!\n"));
 }
 
 void info_op(tracee *tracee, char *cmd)
@@ -176,7 +177,7 @@ void info_op(tracee *tracee, char *cmd)
         for (size_t i = 0; i < tracee->symtab.size; i++)
         {
             GElf_Addr sym_value = tracee->symtab.symbols[i].st_value;
-            printf("0x%lx\t%s\n", base_addr + sym_value, tracee->symtab.sym_names[i]);
+            PRINT(BLUE("0x%lx\t")"%s\n", base_addr + sym_value, tracee->symtab.sym_names[i]);
         }
     }
     else if (type == 'r')
@@ -185,12 +186,12 @@ void info_op(tracee *tracee, char *cmd)
         reg_t *reg = &regs;
         for (size_t i = 0; i < COUNT_REGS(regs); i++, reg++)
         {
-            printf("\$%s\t= 0x%lx\n", defined_regs[i], *reg);
+            PRINT(BLUE("\$%s\t")"= 0x%lx\n", defined_regs[i], *reg);
         }
     }
     else
     {
-        puts("undefined option after i(nfo)");
+        PRINT(RED("undefined option after i(nfo)\n"));
     }
-    puts("");
+    PRINT("\n");
 }

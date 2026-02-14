@@ -15,5 +15,5 @@ typedef struct tracee
     pid_t pid;
     state state;
     symtab symtab;
-    hash_t breakpoints;
+    hm_t breakpoints;
 } tracee;

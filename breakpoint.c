@@ -7,6 +7,7 @@
 #include "breakpoint.h"
 #include "registers.h"
 #include "hashmap.h"
+#include "print.h"
 
 #define BP_OPCODE 0xcc
 #define BP_OPCODE_SIZE 1
@@ -26,20 +27,20 @@ void breakpoint_list(tracee *tracee)
     //     printf("[%d] 0x%lx\n", i, hash[i].key);
     // }
 
-    hash_t current, tmp;
+    hm_t current, tmp;
     int i = 0;
     HASH_ITER(hh, tracee->breakpoints, current, tmp)
     {
-        printf("[%d]\t*0x%lx\n", i++, current->key);
+        printf(BLUE("[%d]\t")"*0x%lx\n", i++, current->key);
     }
-    puts("");
+    PRINT("\n");
 }
 
 void breakpoint_set(tracee *tracee, GElf_Addr addr)
 {
     if (hmfind(tracee->breakpoints, addr))
     {
-        printf("breakpoint at 0x%lx already set\n", addr);
+        PRINT(RED("breakpoint at 0x%lx already set\n"), addr);
         return;
     }
     // if (ptrace(PTRACE_POKEDATA, pid, addr, BP_OPCODE) == -1)
@@ -48,7 +49,7 @@ void breakpoint_set(tracee *tracee, GElf_Addr addr)
     //     perror("");
     //     return;
     // }
-    // hash_t e = malloc(sizeof(*e));
+    // hm_t e = malloc(sizeof(*e));
     // if (!e)
     // {
     //     LOG_ERROR("cannot malloc new hash entry");
@@ -59,7 +60,7 @@ void breakpoint_set(tracee *tracee, GElf_Addr addr)
     // HASH_ADD(hh, *hash, key, sizeof(e->key), e);
     char orig = breakpoint_memset(tracee, addr, BP_OPCODE);
     hmput(&tracee->breakpoints, addr, orig);
-    printf("added new breakpoint at *0x%lx\n", addr);
+    PRINT(GREEN("added new breakpoint at *0x%lx\n"), addr);
     LOG_DEBUG("there are now %d breakpoints\n", HASH_COUNT(tracee->breakpoints));
 }
 
@@ -78,15 +79,15 @@ void breakpoint_unset(tracee *tracee, GElf_Addr addr)
     //     return;
     // }
     // hmdel(hash, addr);
-    hash_t found = hmfind(tracee->breakpoints, addr);
+    hm_t found = hmfind(tracee->breakpoints, addr);
     if (!found)
     {
-        printf("did not find breakpoint at 0x%lx\n", addr);
+        PRINT(RED("did not find breakpoint at 0x%lx\n"), addr);
         return;
     }
     breakpoint_memset(tracee, addr, found->value);
     hmdel(&tracee->breakpoints, addr);
-    printf("deleted breakpoint at 0x%lx\n", addr);
+    PRINT(GREEN("deleted breakpoint at 0x%lx\n"), addr);
 }
 
 void breakpoint_step(tracee *tracee)
@@ -101,7 +102,7 @@ void breakpoint_step(tracee *tracee)
     // step 1
     struct user_regs_struct regs = get_tracee_registers(tracee);
     GElf_Addr bprip = (GElf_Addr)regs.rip - BP_OPCODE_SIZE;
-    hash_t found = hmfind(tracee->breakpoints, bprip);
+    hm_t found = hmfind(tracee->breakpoints, bprip);
     if (!found)
     {
         return;

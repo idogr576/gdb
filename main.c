@@ -23,6 +23,7 @@
 // define a global variable
 // char str[] = "pasten";
 
+#include "print.h"
 int main(int argc, char *argv[])
 {
     char binary_path[PATH_MAX_LEN] = {0};

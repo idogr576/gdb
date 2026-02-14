@@ -2,14 +2,14 @@
 
 #include "hashmap.h"
 
-void hminit(hash_t hash)
+void hminit(hm_t hash)
 {
     hash = NULL;
 }
 
-void hmput(hash_t *hash, GElf_Addr key, char value)
+void hmput(hm_t *hash, GElf_Addr key, char value)
 {
-    hash_t e = malloc(sizeof(*e));
+    hm_t e = malloc(sizeof(*e));
     if (!e)
     {
         LOG_ERROR("cannot malloc new hash entry");
@@ -20,9 +20,9 @@ void hmput(hash_t *hash, GElf_Addr key, char value)
     HASH_ADD(hh, *hash, key, sizeof(e->key), e);
 }
 
-void hmdel(hash_t *hash, GElf_Addr key)
+void hmdel(hm_t *hash, GElf_Addr key)
 {
-    hash_t delkey = hmfind(*hash, key);
+    hm_t delkey = hmfind(*hash, key);
     if (!delkey)
     {
         return;
@@ -31,9 +31,9 @@ void hmdel(hash_t *hash, GElf_Addr key)
     free(delkey);
 }
 
-hash_t hmfind(hash_t hash, GElf_Addr key)
+hm_t hmfind(hm_t hash, GElf_Addr key)
 {
-    hash_t found = NULL;
+    hm_t found = NULL;
     HASH_FIND(hh, hash, &key, sizeof(key), found);
     return found;
 }
