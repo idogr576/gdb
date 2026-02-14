@@ -1,6 +1,6 @@
 #include <sys/ptrace.h>
 #include <errno.h>
-#include <logger.h>
+#include "logger.h"
 #include <gelf.h>
 
 #include "data_utils.h"

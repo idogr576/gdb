@@ -20,6 +20,8 @@ add_compile_options(-g)
 # Executable
 add_executable(gdb
     main.c
+    logger.c
+    loggerconf.c
     breakpoint.c
     cli.c
     operation.c

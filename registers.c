@@ -2,7 +2,7 @@
 #include <sys/user.h>
 #include <string.h>
 #include <gelf.h>
-#include <logger.h>
+#include "logger.h"
 
 #include "registers.h"
 #include "tracee.h"

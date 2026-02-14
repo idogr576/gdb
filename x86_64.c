@@ -2,7 +2,7 @@
 #include <inttypes.h>
 #include <Zydis/Zydis.h>
 #include <stdbool.h>
-#include <logger.h>
+#include "logger.h"
 
 #include "x86_64.h"
 #include "registers.h"

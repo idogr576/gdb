@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
-#include <logger.h>
+#include "logger.h"
 
 #include "breakpoint.h"
 #include "registers.h"
