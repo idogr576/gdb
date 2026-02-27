@@ -108,16 +108,13 @@ GElf_Sym *symtab_find_sym(symtab *symtab, char *symname)
 
 GElf_Addr symtab_get_dyn_sym_addr(pid_t pid, GElf_Sym *sym)
 {
-    // sleep(1); // a patch to wait for the ./test to load by execv
     char maps[PATH_MAX_LEN] = {0};
-    char procname[PATH_MAX_LEN] = {0};
     char buff[BUFSIZ] = {0};
     char *sep;
     FILE *fp;
     GElf_Addr base_addr, sym_addr = (GElf_Addr){0};
 
     snprintf(maps, sizeof(maps), "/proc/%d/maps", pid);
-    snprintf(procname, sizeof(procname), "/proc/%d/cmdline", pid);
 
     fp = fopen(maps, "r");
     if (!fp)
@@ -125,7 +122,6 @@ GElf_Addr symtab_get_dyn_sym_addr(pid_t pid, GElf_Sym *sym)
         LOG_ERROR("cannot open %s for reading", maps);
         goto ret;
     }
-    // fgets(buff, sizeof(buff), fopen(procname, "r"));
     fgets(buff, sizeof(buff), fp);
 
     sep = strchr(buff, '-');
