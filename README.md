@@ -1,19 +1,30 @@
-# gdb
-Making my own version of gdb for linux!
+# GDB
+Making my own version of gdb for linux on the x86_64 architecture!
 
-# deps
+## Requirements
+First, clone this repo to your local machine. Then, update you apt manager
 ```bash
 sudo apt-get update
-# if cmake not installed
-sudo apt install cmake
-# install dependencies
-sudo apt install cmake libelf-dev libzydis-dev zydis-tools libreadline-dev
 ```
 
-# compile and run
-Run
+### cmake installation
+The required build system for this repo is `cmake`, which means it has to be installed.
+
+If you do not have `cmake`, run the following:
+```bash
+sudo apt install cmake
+```
+### dependencies
+Great! now let's install the code dependencies by running
+```bash
+sudo apt install libelf-dev libzydis-dev zydis-tools libreadline-dev
+```
+That's it!
+
+## compile and run
+From the root of this repo, run
 ```bash
 cmake src
 cmake --build .
 ```
-A new binary `./gdb` will be created, thats it!
+A new binary `./gdb` will be created, you're good to go!
