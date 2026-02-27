@@ -4,7 +4,7 @@
 #include <gelf.h>
 #include "tracee.h"
 
-#define INVALID_REGISTER_VALUE -1
+#define INVALID_REGISTER_VALUE (reg_t)-1
 
 #define COUNT_REGS(regs) (sizeof(regs) / sizeof(reg_t))
 
