@@ -11,7 +11,7 @@
 #include "registers.h"
 #include "print.h"
 
-#define BP_OPCODE 0xcc
+#define BP_OPCODE 0xCC
 #define BP_OPCODE_SIZE 1
 
 void breakpoint_init(tracee *tracee)
@@ -37,7 +37,7 @@ void breakpoint_set(tracee *tracee, GElf_Addr addr)
         PRINT(RED("breakpoint at 0x%lx already set\n"), addr);
         return;
     }
-    char orig = breakpoint_memset(tracee, addr, BP_OPCODE);
+    uint8_t orig = breakpoint_memset(tracee, addr, BP_OPCODE);
     hmput(tracee->breakpoints, addr, orig);
     PRINT(GREEN("added new breakpoint at 0x%lx\n"), addr);
     LOG_DEBUG("there are now %d breakpoints\n", hmlen(tracee->breakpoints));
@@ -87,13 +87,13 @@ void breakpoint_step(tracee *tracee)
     breakpoint_memset(tracee, bprip, BP_OPCODE);
 }
 
-char breakpoint_memset(tracee *tracee, GElf_Addr addr, char value)
+uint8_t breakpoint_memset(tracee *tracee, GElf_Addr addr, uint8_t value)
 {
-    char orig = 0;
+    uint8_t orig = 0;
     union
     {
         void *word;
-        char byte;
+        uint8_t byte;
     } data;
     data.word = (void *)ptrace(PTRACE_PEEKDATA, tracee->pid, addr, 0);
     orig = data.byte;

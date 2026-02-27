@@ -9,7 +9,7 @@ typedef struct tracee_state
     bool is_running;
 } state;
 
-typedef struct { GElf_Addr key; char value; } * hm_t;
+typedef struct { GElf_Addr key; uint8_t value; } * hm_t;
 
 typedef struct tracee
 {
