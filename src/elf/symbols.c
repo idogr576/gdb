@@ -78,7 +78,6 @@ void symtab_elf_load(const char *elf_path, symtab *symtab)
         GElf_Sym sym;
         gelf_getsym(data, ii, &sym);
         char *sym_name = elf_strptr(elf, shdr.sh_link, sym.st_name);
-        // TODO: how to get the symbol direct address in runtime
         symtab_add_sym(symtab, sym_name, &sym);
     }
 

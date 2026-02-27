@@ -18,12 +18,6 @@
 #include "breakpoint.h"
 #include "print.h"
 
-// #define STB_DS_IMPLEMENTATION
-// #include "stb_ds.h"
-
-// define a global variable
-// char str[] = "pasten";
-
 int main(int argc, char *argv[])
 {
     char binary_path[PATH_MAX_LEN] = {0};
@@ -31,7 +25,6 @@ int main(int argc, char *argv[])
     int wstatus;
 
     logger_initConsoleLogger(stderr);
-    // logger_setLevel(LogLevel_DEBUG);
     logger_setLevel(LogLevel_ERROR);
 
     if (argc < 2)
@@ -72,44 +65,6 @@ int main(int argc, char *argv[])
 
         LOG_DEBUG("symtab: size = %d", tracee.symtab.size);
         ptrace(PTRACE_CONT, tracee.pid, 0, 0);
-        /*
-        // set the tracee to stop on exit
-        ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACEEXIT);
-
-        // stop child at execution
-        errno = 0;
-        first_letter = ptrace(PTRACE_PEEKDATA, pid, str, NULL);
-        if (first_letter == -1)
-        {
-            LOG_ERROR("[parent] cannot peek data, errno is %d\n", errno);
-            return errno;
-        }
-        LOG_DEBUG("[parent] first letter of child's str is %c\n", (char)first_letter);
-
-        // continue execution of stopped child
-        ptrace(PTRACE_CONT, pid, NULL, NULL);
-
-        // wait for child to finish execution, still no terminate
-        waitpid(pid, &wstatus, 0);
-        if (!WIFSTOPPED(wstatus))
-        {
-            LOG_ERROR("[parent] child didn't terminate normally!");
-            return 2;
-        }
-        LOG_DEBUG("[parent] \"%s\" is in address %p\n", str, str);
-        // attempt to peek at data using ptrace
-        first_letter = ptrace(PTRACE_PEEKDATA, pid, str, NULL);
-        if (first_letter == -1)
-        {
-            LOG_ERROR("[parent] cannot peek data, errno is %d\n", errno);
-            return errno;
-        }
-        LOG_DEBUG("[parent] first letter of child's str is %c\n", (char)first_letter);
-        */
-
-        /*
-        TODO: insert a cli client here and use PTRACE_CONT only on "run" command
-        */
 
         // start the main loop
         char opcode[OPCODE_MAX_REPR] = {0};
@@ -146,7 +101,6 @@ int main(int argc, char *argv[])
         ptrace(PTRACE_TRACEME, 0, 0, 0);
         raise(SIGSTOP);
         // tracer continue execution!
-        // TODO: support run arguments for the binary
         char **exec_argv = (char **)malloc(argc * sizeof(char *));
         if (!exec_argv)
         {
