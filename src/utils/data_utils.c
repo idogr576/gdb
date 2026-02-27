@@ -5,6 +5,25 @@
 
 #include "utils/data_utils.h"
 
+size_t get_format_unit_size(char fmt)
+{
+    size_t size;
+    switch (fmt)
+    {
+    case 'x':
+    case 'd':
+        size = sizeof(int);
+        break;
+    case 'c':
+    case 's':
+        size = sizeof(char);
+        break;
+    default:
+        size = 1;
+    }
+    return size;
+}
+
 /*
 read size bytes from tracee memory at address addr.
 return the number of bytes read. on success, the return value will be equal to size.

@@ -31,7 +31,7 @@ void breakpoint_list(tracee *tracee)
     int i = 0;
     HASH_ITER(hh, tracee->breakpoints, current, tmp)
     {
-        printf(BLUE("[%d]\t")"*0x%lx\n", i++, current->key);
+        printf(YELLOW("[%d]\t") BLUE("0x%016lx\n"), i++, current->key);
     }
     PRINT("\n");
 }
@@ -60,7 +60,7 @@ void breakpoint_set(tracee *tracee, GElf_Addr addr)
     // HASH_ADD(hh, *hash, key, sizeof(e->key), e);
     char orig = breakpoint_memset(tracee, addr, BP_OPCODE);
     hmput(&tracee->breakpoints, addr, orig);
-    PRINT(GREEN("added new breakpoint at *0x%lx\n"), addr);
+    PRINT(GREEN("added new breakpoint at 0x%lx\n"), addr);
     LOG_DEBUG("there are now %d breakpoints\n", HASH_COUNT(tracee->breakpoints));
 }
 

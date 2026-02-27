@@ -10,6 +10,7 @@
 #include <stdbool.h>
 
 #include "logger.h"
+#include "print.h"
 #include "elf/symbols.h"
 
 #define PATH_MAX_LEN 100
@@ -44,7 +45,7 @@ void symtab_elf_load(const char *elf_path, symtab *symtab)
 
     if (elf_version(EV_CURRENT) == EV_NONE)
     {
-        LOG_ERROR("did not find an elf version for the binary");
+        PRINT(RED("did not find an elf version for the binary\n"));
         goto ret;
     }
 

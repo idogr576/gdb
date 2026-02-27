@@ -25,11 +25,11 @@ int main(int argc, char *argv[])
     int wstatus;
 
     logger_initConsoleLogger(stderr);
-    logger_setLevel(LogLevel_ERROR);
+    logger_setLevel(LogLevel_FATAL);
 
     if (argc < 2)
     {
-        printf("Usage: %s <binary path> <args>\n", argv[0]);
+        PRINT("usage: %s <binary path> <args>\n", argv[0]);
         goto error;
     }
     strcpy(binary_path, argv[1]);

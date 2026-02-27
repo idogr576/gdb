@@ -23,7 +23,7 @@ void run_op(tracee *tracee, char *cmd)
     LOG_DEBUG("operarion RUN");
     PRINT(YELLOW("-----------------------------\n"));
     PRINT(YELLOW("starting execution of program\n"));
-    PRINT(YELLOW("-----------------------------")"\n");
+    PRINT(YELLOW("-----------------------------") "\n");
     tracee->state.start = true;
     tracee->state.is_running = true;
     ptrace(PTRACE_CONT, tracee->pid, 0, 0);
@@ -57,16 +57,22 @@ void examine_op(tracee *tracee, char *cmd)
 {
     LOG_DEBUG("operation EXAMINE");
     char buf[BUFSIZ] = {0};
-    char fullfmt[BUFSIZ] = {0};
     char fmt = 'x';
     int n = 1;
     // try to read the input
     if (sscanf(cmd, "x/%d%c %s", &n, &fmt, buf) != 3 || !buf)
     {
         LOG_ERROR("cannot read cmd to buffer");
+        PRINT(RED("usage: x/<n><fmt> <value>\n"));
         return;
     }
     Value val = resolve_value(tracee, buf);
+
+    if (IS_INVALID_VALUE(val))
+    {
+        PRINT(RED("Invalid value to examine!\nNot a symbol, register or direct address\n"));
+        return;
+    }
 
     if (fmt == 'i')
     {
@@ -77,28 +83,24 @@ void examine_op(tracee *tracee, char *cmd)
     {
         return;
     }
+    size_t unit = get_format_unit_size(fmt);
     uint8_t data[BUFSIZ] = {0};
-    size_t size = read_tracee_mem(tracee, val.addr, data, n);
+    size_t size = read_tracee_mem(tracee, val.addr, data, n * unit);
     LOG_DEBUG("read %ld bytes", size);
     if (fmt == 's')
     {
         PRINT(BLUE("%016" PRIX64) " %s\n", val.addr, data);
         return;
     }
-    bool print_warning = true;
     for (int i = 0; i < n; i++)
     {
         if (fmt == 'x')
         {
-            // TODO: does not display right data
-            if(print_warning) PRINT(RED("WARNING: this formatting method is not accurate\n"));
             uint32_t *p = data;
             PRINT(BLUE("%016" PRIX64) " 0x%08lx\n", val.addr + i * sizeof(*p), p[i]);
         }
         if (fmt == 'd')
         {
-            // TODO: does not display right data
-            if(print_warning) PRINT(RED("WARNING: this formatting method is not accurate\n"));
             int32_t *p = data;
             PRINT(BLUE("%016" PRIX64) " %d\n", val.addr + i * sizeof(*p), p[i]);
         }
@@ -112,7 +114,6 @@ void examine_op(tracee *tracee, char *cmd)
             char *p = data;
             PRINT(BLUE("%016" PRIX64) " %c\n", val.addr + i * sizeof(*p), p[i]);
         }
-        print_warning = false;
     }
 }
 
@@ -130,17 +131,23 @@ void print_op(tracee *tracee, char *cmd)
     if (!buf)
     {
         LOG_ERROR("cannot read cmd to buffer");
+        PRINT(RED("usage: p/<fmt> <value>, default <fmt> is 'x'\n"));
         return;
     }
     Value val = resolve_value(tracee, buf);
+    if (IS_INVALID_VALUE(val))
+    {
+        PRINT(RED("Invalid value to print!\nNot a symbol, register or direct address\n"));
+        return;
+    }
 
     if (fmt == 'd')
     {
-        strcpy(fullfmt, "{ %s == %ld }\n");
+        strcpy(fullfmt, BLUE("%s") " = %ld\n");
     }
     else
     {
-        strcpy(fullfmt, "{ %s == 0x%lx }\n");
+        strcpy(fullfmt, BLUE("%s") " = 0x%lx\n");
     }
     PRINT(fullfmt, buf, val);
 }
@@ -198,6 +205,7 @@ void info_op(tracee *tracee, char *cmd)
     if (sscanf(cmd, "i %c", &type) != 1)
     {
         LOG_ERROR("invalid input");
+        PRINT(RED("usage: i <info>\ninfo can be s (symbol) or r (register)\n"));
         return;
     }
     // symbols
