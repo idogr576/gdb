@@ -29,9 +29,9 @@ add_executable(gdb
     breakpoint.c
     elf/symbols.c
     arch/x86_64.c
-    utils/path_utils.c
+    utils/path.c
     utils/parser.c
-    utils/data_utils.c
+    utils/data.c
 )
 
 # Include headers from this directory

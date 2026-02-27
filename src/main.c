@@ -12,7 +12,7 @@
 #include "cli.h"
 #include "operation.h"
 #include "elf/symbols.h"
-#include "utils/path_utils.h"
+#include "utils/path.h"
 #include "tracee.h"
 #include "arch/x86_64.h"
 #include "breakpoint.h"

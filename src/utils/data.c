@@ -3,7 +3,7 @@
 #include "logger.h"
 #include <gelf.h>
 
-#include "utils/data_utils.h"
+#include "utils/data.h"
 
 size_t get_format_unit_size(char fmt)
 {

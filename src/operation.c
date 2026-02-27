@@ -11,7 +11,7 @@
 #include "registers.h"
 #include "arch/x86_64.h"
 #include "breakpoint.h"
-#include "utils/data_utils.h"
+#include "utils/data.h"
 #include "print.h"
 
 void run_op(tracee *tracee, char *cmd)
