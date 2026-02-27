@@ -2,13 +2,14 @@
 #include <sys/types.h>
 #include <stdbool.h>
 #include "elf/symbols.h"
-#include "utils/hashmap.h"
 
 typedef struct tracee_state
 {
     bool start;
     bool is_running;
 } state;
+
+typedef struct { GElf_Addr key; char value; } * hm_t;
 
 typedef struct tracee
 {

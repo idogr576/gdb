@@ -7,7 +7,7 @@ project(gdb C)
 set(CMAKE_C_COMPILER gcc)
 
 # C standard
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
@@ -31,7 +31,6 @@ add_executable(gdb
     arch/x86_64.c
     utils/path_utils.c
     utils/parser.c
-    utils/hashmap.c
     utils/data_utils.c
 )
 
