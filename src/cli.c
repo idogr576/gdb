@@ -24,7 +24,7 @@ char *get_last_command()
         return NULL;
     }
     HIST_ENTRY *e = history_get(history_base + history_length - 1);
-    return e->line;
+    return strdup(e->line);
 }
 
 command_op read_command(tracee *tracee, char *prefix)

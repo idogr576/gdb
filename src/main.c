@@ -88,6 +88,10 @@ int main(int argc, char *argv[])
                 LOG_DEBUG("waitpid catch status %d", wstatus);
                 tracee.state.is_running = !WIFSTOPPED(wstatus);
             }
+            if (cmd_op.cmdline)
+            {
+                free(cmd_op.cmdline);
+            }
         } while (!WIFEXITED(wstatus) && !IS_QUIT_OP(cmd_op));
     }
     else // child process
