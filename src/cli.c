@@ -8,16 +8,26 @@
 #include "logger.h"
 
 #include "cli.h"
+#include "tracee.h"
 #include "operation.h"
 #include "print.h"
-
 
 void cli_init()
 {
     rl_bind_key('\t', NULL);
 }
 
-command_op read_command(char *prefix)
+char *get_last_command()
+{
+    if (!history_length)
+    {
+        return NULL;
+    }
+    HIST_ENTRY *e = history_get(history_base + history_length - 1);
+    return e->line;
+}
+
+command_op read_command(tracee *tracee, char *prefix)
 {
     char *cmdline = NULL;
     char prompt[MAX_PROMPT_SIZE] = {0};
@@ -37,14 +47,11 @@ command_op read_command(char *prefix)
     {
         add_history(cmdline);
     }
-
-    // remove trailing '\n' from cmdline
-    char *p = strchr(cmdline, '\n');
-    if (p)
+    else if (tracee->state.start)
     {
-        *p = '\0';
+        // empty cmdline means using the last command
+        cmdline = get_last_command();
     }
-
     LOG_DEBUG("read: \"%s\"", cmdline);
     cmd_op.cmdline = cmdline;
 
