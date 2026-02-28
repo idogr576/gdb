@@ -187,10 +187,11 @@ void breakpoint_op(tracee *tracee, char *cmd)
 
 void help_op(tracee *tracee, char *cmd)
 {
-    char buffer[BUFSIZ] = {0};
-    FILE *helpfp = fopen("./docs/help.txt", "r");
-    fread(buffer, sizeof(*buffer), BUFSIZ, helpfp);
-    PRINT("%s\n", buffer);
+    char c;
+    FILE *fp = fopen("./docs/help.txt", "r");
+    while ((c = fgetc(fp)) != EOF) {
+        putchar(c);
+    }
 }
 
 void quit_op(tracee *tracee, char *cmd)

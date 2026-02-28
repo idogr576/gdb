@@ -2,7 +2,7 @@
 Making my own version of gdb for linux on the x86_64 architecture!
 
 ## Requirements
-First, clone this repo to your local machine. Then, update you apt manager
+First, clone this repo to your local machine. Then, update the apt manager
 ```bash
 sudo apt-get update
 ```
