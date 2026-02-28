@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # Project name and language
-project(gdb C)
+project(sdb C)
 
 # Use gcc explicitly (optional but explicit)
 set(CMAKE_C_COMPILER gcc)
@@ -18,7 +18,7 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 # add_compile_options(-g)
 
 # Executable
-add_executable(gdb
+add_executable(sdb
     main.c
     logger.c
     loggerconf.c
@@ -35,12 +35,12 @@ add_executable(gdb
 )
 
 # Include headers from this directory
-target_include_directories(gdb PRIVATE
+target_include_directories(sdb PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # Link against your logger shared library
-target_link_libraries(gdb
+target_link_libraries(sdb
     PRIVATE
     elf
     Zydis

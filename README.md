@@ -1,4 +1,4 @@
-# GDB Slim
+# SDB - Slim GDB
 ## A light weight gdb-like debugger for linux x86_64!
 
 ## Requirements
@@ -27,4 +27,4 @@ From the root of this repo, run
 cmake src
 cmake --build .
 ```
-A new binary `./gdb` will be created, you're good to go!
+A new binary `./sdb` will be created, you're good to go!

@@ -196,7 +196,7 @@ void help_op(tracee *tracee, char *cmd)
 
 void quit_op(tracee *tracee, char *cmd)
 {
-    PRINT(YELLOW("Goodby from gdb!\n"));
+    PRINT(YELLOW("Goodby from sdb!\n"));
 }
 
 void info_op(tracee *tracee, char *cmd)
