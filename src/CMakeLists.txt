@@ -15,7 +15,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 add_compile_options(-Wall -Wextra -Wpedantic)
 
 # debug symbols
-# add_compile_options(-g)
+add_compile_options(-g)
 
 # Executable
 add_executable(sdb
