@@ -1,7 +1,5 @@
 #pragma once
 /*
-TODO: implement symtab loading from elf using libelf.
-
 found this stack overflow thread that might help!
 https://stackoverflow.com/questions/23809102/print-the-symbol-table-of-an-elf-file
 

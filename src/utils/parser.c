@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include <string.h>
-#include "logger.h"
+#include <ctype.h>
 
+#include "logger.h"
 #include "elf/symbols.h"
 #include "utils/parser.h"
 
 ValueType identify_addr_type(char *addr_repr, symtab *symtab)
 {
-    if (addr_repr[0] == '*')
+    if (isdigit(addr_repr[0]))
     {
         return TYPE_ADDRESS;
     }
@@ -20,24 +21,16 @@ ValueType identify_addr_type(char *addr_repr, symtab *symtab)
 
 GElf_Addr parse_direct_address(char *addr_repr)
 {
-    // char *addr_bases[] = {"*0x", "*", NULL};
-
-    // int idx_base = 0;
-    // char *selected_base;
-    // do
-    // {
-    //     selected_base = addr_bases[idx_base++];
-    //     if (!strncmp(addr_repr, selected_base, strlen(selected_base)))
-    //     {
-    //         break;
-    //     }
-    // } while (selected_base != NULL);
-
-    if (!strncmp(addr_repr, "*0x", 3))
+    if (IS_ADDR_HEX(addr_repr))
     {
-        return (GElf_Addr)strtoull(addr_repr + 3, NULL, 16);
+        return (GElf_Addr)strtoull(addr_repr + PREFIX_HEX_SIZE, NULL, 16);
     }
-    return (GElf_Addr)-1;
+    if (IS_ADDR_DEC(addr_repr))
+    {
+
+        return (GElf_Addr)strtoull(addr_repr + PREFIX_DEC_SIZE, NULL, 10);
+    }
+    return INVALID_ADDRESS;
 }
 
 GElf_Addr resolve_address(ValueType type, pid_t pid, symtab *symtab, char *addr_repr)
@@ -56,39 +49,48 @@ GElf_Addr resolve_address(ValueType type, pid_t pid, symtab *symtab, char *addr_
         }
 
         GElf_Addr addr = symtab_get_dyn_sym_addr(pid, sym);
-        LOG_DEBUG("%s == 0x%lx\n", addr_repr, addr);
+        LOG_DEBUG("%s = 0x%lx\n", addr_repr, addr);
         return addr;
     }
 error:
-    return (GElf_Addr)-1;
+    return INVALID_ADDRESS;
 }
 
 Value resolve_value(tracee *tracee, char *addr_repr)
 {
-    Value ret = {0};
+    Value val;
     ValueType type = identify_addr_type(addr_repr, &tracee->symtab);
     // check if register or address
     switch (type)
     {
     case TYPE_REGISTER:
         reg_t reg = get_register_value(tracee, addr_repr + 1);
-        ret.reg = reg;
+        if (reg == INVALID_REGISTER_VALUE)
+        {
+            val = INVALID_VALUE;
+        }
+        else
+        {
+            val.reg = reg;
+        }
         break;
 
     case TYPE_ADDRESS:
     case TYPE_SYMBOL:
         GElf_Addr addr = resolve_address(type, tracee->pid, &tracee->symtab, addr_repr);
-        if (addr == (GElf_Addr)-1)
+        if (addr == INVALID_ADDRESS)
         {
             LOG_ERROR("cannot resolve address %s", addr_repr);
+            val = INVALID_VALUE;
         }
         else
         {
-            ret.addr = addr;
+            val.addr = addr;
         }
         break;
     default:
         LOG_ERROR("address does not match any kind");
+        val = INVALID_VALUE;
     }
-    return ret;
+    return val;
 }

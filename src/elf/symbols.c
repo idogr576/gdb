@@ -10,6 +10,7 @@
 #include <stdbool.h>
 
 #include "logger.h"
+#include "print.h"
 #include "elf/symbols.h"
 
 #define PATH_MAX_LEN 100
@@ -44,7 +45,7 @@ void symtab_elf_load(const char *elf_path, symtab *symtab)
 
     if (elf_version(EV_CURRENT) == EV_NONE)
     {
-        LOG_ERROR("did not find an elf version for the binary");
+        PRINT(RED("did not find an elf version for the binary\n"));
         goto ret;
     }
 
@@ -78,7 +79,6 @@ void symtab_elf_load(const char *elf_path, symtab *symtab)
         GElf_Sym sym;
         gelf_getsym(data, ii, &sym);
         char *sym_name = elf_strptr(elf, shdr.sh_link, sym.st_name);
-        // TODO: how to get the symbol direct address in runtime
         symtab_add_sym(symtab, sym_name, &sym);
     }
 
@@ -108,16 +108,13 @@ GElf_Sym *symtab_find_sym(symtab *symtab, char *symname)
 
 GElf_Addr symtab_get_dyn_sym_addr(pid_t pid, GElf_Sym *sym)
 {
-    // sleep(1); // a patch to wait for the ./test to load by execv
     char maps[PATH_MAX_LEN] = {0};
-    char procname[PATH_MAX_LEN] = {0};
     char buff[BUFSIZ] = {0};
     char *sep;
     FILE *fp;
     GElf_Addr base_addr, sym_addr = (GElf_Addr){0};
 
     snprintf(maps, sizeof(maps), "/proc/%d/maps", pid);
-    snprintf(procname, sizeof(procname), "/proc/%d/cmdline", pid);
 
     fp = fopen(maps, "r");
     if (!fp)
@@ -125,7 +122,6 @@ GElf_Addr symtab_get_dyn_sym_addr(pid_t pid, GElf_Sym *sym)
         LOG_ERROR("cannot open %s for reading", maps);
         goto ret;
     }
-    // fgets(buff, sizeof(buff), fopen(procname, "r"));
     fgets(buff, sizeof(buff), fp);
 
     sep = strchr(buff, '-');

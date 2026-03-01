@@ -1,7 +1,8 @@
 #pragma once
 #include "operation.h"
+#include "tracee.h"
 
-#define MAX_PROMPT_SIZE 32
+#define MAX_PROMPT_SIZE 128
 
 typedef struct command_op
 {
@@ -11,4 +12,6 @@ typedef struct command_op
 
 void cli_init();
 
-command_op read_command(char *prefix);
+char *get_last_command();
+
+command_op read_command(tracee *tracee, char *prefix);

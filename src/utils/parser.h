@@ -6,6 +6,19 @@
 #include "registers.h"
 #include "tracee.h"
 
+#define INVALID_ADDRESS 0
+#define INVALID_VALUE \
+    (Value) { .addr = INVALID_ADDRESS }
+
+#define IS_INVALID_VALUE(value) (value.addr == INVALID_VALUE.addr)
+
+#define PREFIX_HEX_SIZE 2
+#define PREFIX_DEC_SIZE 0
+
+// macros for identifying prefix type
+#define IS_ADDR_HEX(x) (!strncmp(x, "0x", PREFIX_HEX_SIZE))
+#define IS_ADDR_DEC(x) (strlen(x) > PREFIX_DEC_SIZE && isdigit(x[PREFIX_DEC_SIZE]))
+
 typedef enum AddrType
 {
     DIRECT,
@@ -30,8 +43,6 @@ typedef union Value
 ValueType identify_addr_type(char *addr_repr, symtab *symtab);
 
 GElf_Addr parse_direct_address(char *addr_repr);
-
-// GElf_Addr parse_symbol_address(char* addr_repr, pid_t pid, symtab* symtab);
 
 GElf_Addr resolve_address(ValueType type, pid_t pid, symtab *symtab, char *addr_repr);
 

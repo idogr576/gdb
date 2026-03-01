@@ -6,6 +6,7 @@
 
 #include "registers.h"
 #include "tracee.h"
+#include "print.h"
 
 const char *defined_regs[] = {"r15", "r14", "r13", "r12",
                               "rbp", "rbx", "r11", "r10", "r9", "r8", "rax",
@@ -28,7 +29,7 @@ reg_t get_register_value(tracee *tracee, char *reg_name)
 
     LOG_DEBUG("%d regs.\nsanity check: %s = %ld = %ld. ", COUNT_REGS(regs), defined_regs[10], *(regp + 10), regs.rax);
 
-    for (int i = 0; i < COUNT_REGS(regs); i++)
+    for (size_t i = 0; i < COUNT_REGS(regs); i++)
     {
         if (!strcmp(reg_name, defined_regs[i]))
         {
@@ -37,14 +38,14 @@ reg_t get_register_value(tracee *tracee, char *reg_name)
         }
     }
     LOG_ERROR("register \"%s\" not found", reg_name);
-    return 0;
+    return INVALID_REGISTER_VALUE;
 }
 
 error_t set_register_value(tracee *tracee, char *reg_name, reg_t value)
 {
     struct user_regs_struct regs = get_tracee_registers(tracee);
     reg_t *regp = (reg_t *)&regs;
-    for (int i = 0; i < COUNT_REGS(regs); i++)
+    for (size_t i = 0; i < COUNT_REGS(regs); i++)
     {
         if (!strcmp(reg_name, defined_regs[i]))
         {
