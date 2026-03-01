@@ -96,22 +96,22 @@ void examine_op(tracee *tracee, char *cmd)
     {
         if (fmt == 'x')
         {
-            uint32_t *p = data;
+            uint32_t *p = (uint32_t *)data;
             PRINT(BLUE("%016" PRIX64) " 0x%08lx\n", val.addr + i * sizeof(*p), p[i]);
         }
         if (fmt == 'd')
         {
-            int32_t *p = data;
+            int32_t *p = (int32_t *)data;
             PRINT(BLUE("%016" PRIX64) " %d\n", val.addr + i * sizeof(*p), p[i]);
         }
         if (fmt == 'b')
         {
-            uint8_t *p = data;
+            uint8_t *p = (uint8_t *)data;
             PRINT(BLUE("%016" PRIX64) " 0x%02hhx\n", val.addr + i * sizeof(*p), p[i]);
         }
         if (fmt == 'c')
         {
-            char *p = data;
+            char *p = (char *)data;
             PRINT(BLUE("%016" PRIX64) " %c\n", val.addr + i * sizeof(*p), p[i]);
         }
     }
@@ -189,7 +189,8 @@ void help_op(tracee *tracee, char *cmd)
 {
     char c;
     FILE *fp = fopen("./docs/help.txt", "r");
-    while ((c = fgetc(fp)) != EOF) {
+    while ((c = fgetc(fp)) != EOF)
+    {
         putchar(c);
     }
 }
@@ -222,7 +223,7 @@ void info_op(tracee *tracee, char *cmd)
     else if (type == 'r')
     {
         struct user_regs_struct regs = get_tracee_registers(tracee);
-        reg_t *reg = &regs;
+        reg_t *reg = (reg_t *)&regs;
         for (size_t i = 0; i < COUNT_REGS(regs); i++, reg++)
         {
             PRINT(BLUE("%8s") " = 0x%lx\n", defined_regs[i], *reg);

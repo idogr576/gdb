@@ -2,6 +2,8 @@
 ## A light weight gdb-like debugger for linux x86_64!
 
 ## Requirements
+Note that only **debian based** distributions are supported.
+
 First, clone this repo to your local machine. Then, update the apt manager
 ```bash
 sudo apt-get update

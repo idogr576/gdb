@@ -34,9 +34,7 @@ command_op read_command(tracee *tracee, char *prefix)
     char chr_op;
     command_op cmd_op = {NULL, NULL};
 
-    rewind(stdin);
     sprintf(prompt, YELLOW("%s "), prefix);
-
     cmdline = readline(prompt);
     if (!cmdline)
     {
