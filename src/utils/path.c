@@ -24,7 +24,7 @@ bool binary_path_exists(char *binary_path)
             if (!access(search_binary_path, X_OK))
             {
                 LOG_DEBUG("found binary in %s", search_binary_path);
-                strcpy(binary_path, search_binary_path);
+                strncpy(binary_path, search_binary_path, strlen(binary_path));
                 path_exists = true;
                 break;
             }

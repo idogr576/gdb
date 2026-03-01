@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         PRINT("usage: %s <binary path> <args>\n", argv[0]);
         goto error;
     }
-    strcpy(binary_path, argv[1]);
+    strncpy(binary_path, argv[1], PATH_MAX_LEN);
 
     if (!binary_path_exists(binary_path))
     {

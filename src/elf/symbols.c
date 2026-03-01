@@ -10,10 +10,9 @@
 #include <stdbool.h>
 
 #include "logger.h"
+#include "utils/path.h"
 #include "print.h"
 #include "elf/symbols.h"
-
-#define PATH_MAX_LEN 100
 
 void symtab_init(symtab *symtab)
 {
@@ -26,7 +25,7 @@ void symtab_add_sym(symtab *symtab, char *sym_name, GElf_Sym *sym)
     size_t size = symtab->size;
     symtab->symbols[size] = *sym;
     char *new_sym_name = symtab->sym_names[size];
-    strcpy(new_sym_name, sym_name);
+    strncpy(new_sym_name, sym_name, SYM_MAX_LEN);
     symtab->size++;
 }
 

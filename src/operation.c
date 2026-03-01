@@ -143,11 +143,11 @@ void print_op(tracee *tracee, char *cmd)
 
     if (fmt == 'd')
     {
-        strcpy(fullfmt, BLUE("%s") " = %ld\n");
+        strncpy(fullfmt, BLUE("%s") " = %ld\n", BUFSIZ);
     }
     else
     {
-        strcpy(fullfmt, BLUE("%s") " = 0x%lx\n");
+        strncpy(fullfmt, BLUE("%s") " = 0x%lx\n", BUFSIZ);
     }
     PRINT(fullfmt, buf, val);
 }
