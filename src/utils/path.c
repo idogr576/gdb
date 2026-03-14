@@ -6,7 +6,7 @@
 
 #include "utils/path.h"
 
-bool binary_path_exists(char *binary_path)
+bool binary_path_exists(char *binary_path, size_t maxlen)
 {
     bool path_exists = false;
     if (access(binary_path, F_OK) == -1)
@@ -24,7 +24,7 @@ bool binary_path_exists(char *binary_path)
             if (!access(search_binary_path, X_OK))
             {
                 LOG_DEBUG("found binary in %s", search_binary_path);
-                strncpy(binary_path, search_binary_path, strlen(binary_path));
+                strncpy(binary_path, search_binary_path, maxlen);
                 path_exists = true;
                 break;
             }
@@ -43,6 +43,6 @@ bool binary_path_exists(char *binary_path)
             path_exists = true;
         }
     }
-    LOG_INFO("reached end of func");
+    LOG_DEBUG("binary_path = %s\n", binary_path);
     return path_exists;
 }
