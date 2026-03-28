@@ -145,7 +145,7 @@ void examine_op(tracee *tracee, char *cmd)
         if (fmt == 'x')
         {
             uint32_t *p = (uint32_t *)data;
-            PRINT(BLUE("%016" PRIX64) " %#08lx\n", val.addr + i * sizeof(*p), p[i]);
+            PRINT(BLUE("%016" PRIX64) " %#08x\n", val.addr + i * sizeof(*p), p[i]);
         }
         if (fmt == 'd')
         {
@@ -365,7 +365,7 @@ void set_op(tracee *tracee, char *cmd)
     case TYPE_SYMBOL:
         // set a single bytes to this address
         uint8_t byte = (uint8_t)val.addr;
-        PRINT(BLUE("attempting to set byte %#lx to address %#lx") "\n", byte, var.addr);
+        PRINT(BLUE("attempting to set byte %#x to address %#lx") "\n", byte, var.addr);
         singlebyte_memset(tracee, var.addr, byte);
         PRINT(GREEN("success!") "\n");
         break;
