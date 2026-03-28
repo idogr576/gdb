@@ -1,5 +1,9 @@
 # SDB - Slim GDB
-## A light weight gdb-like debugger for linux x86_64!
+<p align="center">
+  <img src="logo.png" width="300" alt="sdb logo">
+</p>
+
+**A light weight gdb-like debugger for linux x86_64!**
 
 ## Requirements
 Note that only **debian based** distributions are supported.
