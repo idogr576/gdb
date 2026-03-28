@@ -211,30 +211,31 @@ void breakpoint_op(tracee *tracee, char *cmd)
     {
         breakpoint_list(tracee);
     }
+    Value val;
     if (cmd[1] == ' ')
     {
-        Value addr = resolve_value(tracee, &cmd[2]);
-        if (!addr.addr)
+        val = resolve_value(tracee, &cmd[2]);
+        if (IS_INVALID_VALUE(val))
         {
             PRINT(RED("address does not exists\n"));
         }
         else
         {
-            breakpoint_set(tracee, addr.addr);
-            PRINT(GREEN("added new breakpoint at %#lx") "\n", addr);
+            breakpoint_set(tracee, val.addr);
+            PRINT(GREEN("added new breakpoint at %#lx") "\n", val.addr);
         }
     }
     if (cmd[1] == 'd')
     {
-        Value addr = resolve_value(tracee, &cmd[3]);
-        if (!addr.addr)
+        val = resolve_value(tracee, &cmd[3]);
+        if (IS_INVALID_VALUE(val))
         {
             PRINT(RED("address does not exists\n"));
         }
         else
         {
-            breakpoint_unset(tracee, addr.addr);
-            PRINT(GREEN("deleted breakpoint at %#lx") "\n", addr.addr);
+            breakpoint_unset(tracee, val.addr);
+            PRINT(GREEN("deleted breakpoint at %#lx") "\n", val.addr);
         }
     }
 }
