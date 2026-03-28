@@ -15,10 +15,14 @@
 #include "utils/data.h"
 #include "print.h"
 
+// mark unused parameters to disable compilation warnings
+#define UNUSED(x) (void)(x)
+
 #define FMTSIZE 32
 
 void run_op(tracee *tracee, char *cmd)
 {
+    UNUSED(cmd);
     if (tracee->state.start)
     {
         return;
@@ -34,6 +38,7 @@ void run_op(tracee *tracee, char *cmd)
 
 void continue_op(tracee *tracee, char *cmd)
 {
+    UNUSED(cmd);
     LOG_DEBUG("operation CONTINUE");
     if (!tracee->state.start)
     {
@@ -47,6 +52,7 @@ void continue_op(tracee *tracee, char *cmd)
 
 void step_op(tracee *tracee, char *cmd)
 {
+    UNUSED(cmd);
     LOG_DEBUG("STEP OPERATION");
     if (tracee->state.start && !tracee->state.is_running)
     {
@@ -242,6 +248,8 @@ void breakpoint_op(tracee *tracee, char *cmd)
 
 void help_op(tracee *tracee, char *cmd)
 {
+    UNUSED(tracee);
+    UNUSED(cmd);
     PRINT("Available Commands:\n");
     PRINT("----------------------------------------------\n");
     PRINT(GREEN("r") "   - start program\n");
@@ -280,6 +288,8 @@ void help_op(tracee *tracee, char *cmd)
 
 void quit_op(tracee *tracee, char *cmd)
 {
+    UNUSED(tracee);
+    UNUSED(cmd);
     PRINT(YELLOW("Goodby from sdb!\n"));
 }
 
