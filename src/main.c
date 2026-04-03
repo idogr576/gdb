@@ -119,7 +119,7 @@ error:
     if (errno)
     {
         char *err = strerror(errno);
-        LOG_ERROR(err);
+        PRINT(RED("%s") "\n", err);
     }
     return errno;
 }
