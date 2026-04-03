@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "logger.h"
+#include "external/logger.h"
 
 #include "utils/path.h"
 

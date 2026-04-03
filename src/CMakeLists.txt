@@ -20,8 +20,6 @@ add_compile_options(-g)
 # Executable
 add_executable(sdb
     main.c
-    logger.c
-    loggerconf.c
     breakpoint.c
     cli.c
     operation.c
@@ -32,6 +30,8 @@ add_executable(sdb
     utils/path.c
     utils/parser.c
     utils/data.c
+    external/logger.c
+    external/loggerconf.c
 )
 
 # Include headers from this directory

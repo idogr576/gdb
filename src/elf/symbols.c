@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "logger.h"
+#include "external/logger.h"
 #include "utils/path.h"
 #include "print.h"
 #include "elf/symbols.h"

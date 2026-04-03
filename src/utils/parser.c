@@ -2,7 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "logger.h"
+#include "external/logger.h"
 #include "elf/symbols.h"
 #include "utils/parser.h"
 

@@ -1,11 +1,11 @@
 #define STB_DS_IMPLEMENTATION
-#include "utils/stb_ds.h"
+#include "external/stb_ds.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
-#include "logger.h"
+#include "external/logger.h"
 
 #include "breakpoint.h"
 #include "registers.h"
